@@ -211,13 +211,18 @@ button[type="submit"] .icon {
     left: 10px; /* المسافة من اليسار */
     background-color: #0cbc58;
     color: #fff;
-    border-radius: 20%;
-    padding: 10px;
+    border-radius: 8px; /* حواف مربعة بدلاً من دائرية */
+    padding: 10px; /* تقليل الحواف الداخلية */
     font-size: 20px;
     text-decoration: none;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     z-index: 1000; /* تأكد من أن الأيقونة في أعلى العناصر */
+    width: 40px; /* تحديد عرض ثابت */
+    height: 40px; /* تحديد ارتفاع ثابت */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .back-icon:hover {
