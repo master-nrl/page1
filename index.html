@@ -14,21 +14,23 @@
     color: #333;
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* جعل الجسم يمتد لملء الشاشة بالكامل */
 }
 
-body[dir="rtl"] {
-    font-family: 'Cairo', sans-serif; /* تغيير الخط للغة العربية */
-}
-        .container {
+.container {
     background: #fff;
-    padding: 20px; /* تقليل الحواف الداخلية */
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     width: 100%; /* جعل النموذج يمتد بالكامل */
-    max-width: 500px; /* تحديد أقصى عرض */
-    height: 100%; /* ملء الشاشة */
+    max-width: 1000px; /* زيادة العرض الأقصى */
+    height: auto; /* جعل الارتفاع يتكيف مع المحتوى */
     box-sizing: border-box;
     overflow-y: auto; /* إضافة تمرير داخلي عند الحاجة */
+    margin: 0px; /* إضافة هامش خارجي */
 }
         h2 {
             margin-bottom: 20px;
@@ -238,6 +240,83 @@ body {
 .container {
     position: relative;
 }
+/* أيقونة الوضع الليلي */
+.night-mode-icon {
+    position: absolute;
+    top: 20px;
+    right: 10px;
+    background-color: #0cbc58;
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 1000;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.night-mode-icon:hover {
+    background-color: #099c48;
+    transform: scale(1.1);
+}
+
+/* أنماط الوضع الليلي */
+body.night-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.night-mode .container {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+body.night-mode h2 {
+    color: #ffffff;
+}
+
+body.night-mode label {
+    color: #cccccc;
+}
+
+body.night-mode input,
+body.night-mode select,
+body.night-mode textarea {
+    background-color: #333;
+    color: #ffffff;
+    border-color: #555;
+}
+
+body.night-mode input:focus,
+body.night-mode select:focus,
+body.night-mode textarea:focus {
+    border-color: #0cbc58;
+    box-shadow: 0 0 8px rgba(12, 188, 88, 0.4);
+}
+
+body.night-mode .form-note {
+    color: #999;
+}
+
+body.night-mode .modal-content {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+body.night-mode .modal-content h2 {
+    color: #ffffff;
+}
+
+body.night-mode .modal-content button {
+    background-color: #0cbc58;
+    color: #ffffff;
+}
 
     </style>
 </head>
@@ -258,36 +337,43 @@ body {
     <h2><img src="https://i.ibb.co/NLGVvbq/Picsart-25-01-06-01-24-59-528.png" alt="صورة" class="icon" style="width: 40px; height: auto; margin-left: 8px;">إضافة عنصر</h2>
     
     <a href="https://master-nrl.github.io/home/" class="back-icon">
-    <i class="fa-solid fa-circle-chevron-left"></i>
-</a>
+        <i class="fa-solid fa-circle-chevron-left"></i>
+    </a>
+    
+    <!-- أيقونة الوضع الليلي -->
+    <div id="night-mode-toggle" class="night-mode-icon">
+        <i class="fas fa-moon"></i>
+    </div>
+    
+    
     
     <form id="submissionForm">
-        <!-- اختيار النوع -->
-        <div class="form-group">
-            <label for="type"><i class="fa-solid fa-list-ul icon"></i>اختر النوع:</label>
-            <select id="type" class="form-select" required>
-                <option value="" disabled selected>-- اختر النوع --</option>
-                <option value="book">📘 كتاب</option>
-                <option value="lesson">📚 درس</option>
-                <option value="offer">💡 عرض</option>
-            </select>
-        </div>
+<!-- اختيار النوع -->
+<div class="form-group">
+    <label for="type"><i class="fa-solid fa-list-ul icon"></i>اختر النوع:</label>
+    <select id="type" class="form-select" required>
+        <option value="" disabled selected>-- اختر النوع --</option>
+        <option value="📄 مقال">📄 مقال</option>
+        <option value="🎤 ندوة">🎤 ندوة</option>
+        <option value="💡 عرض">💡 عرض</option>
+    </select>
+</div>
 
         <!-- اختيار اللغة -->
         <div class="form-group">
             <label for="language"><i class="fa-solid fa-language icon"></i>اختر اللغة:</label>
             <select id="language" class="form-select" required>
                 <option value="" disabled selected>-- اختر اللغة --</option>
-                <option value="arabic">العربية</option>
-                <option value="french">الفرنسية</option>
-                <option value="english">الإنجليزية</option>
+                <option value="العربية">العربية</option>
+                <option value="الفرنسية">الفرنسية</option>
+                <option value="الإنجليزية">الإنجليزية</option>
             </select>
         </div>
 
         <!-- اسم العنصر -->
         <div class="form-group">
             <label for="name"><i class="fa-solid fa-book-open icon"></i>اسم العنصر:</label>
-            <input type="text" id="name" class="form-control" placeholder="أدخل اسم الكتاب، الدرس، أو العرض" required>
+            <input type="text" id="name" class="form-control" placeholder="أدخل اسم المقال، الندوة، أو العرض" required>
         </div>
 
         <!-- باقي الحقول كما هي -->
@@ -342,7 +428,7 @@ body {
         <!-- وصف العنصر -->
         <div class="form-group">
             <label for="description"><i class="fa-solid fa-file-lines icon"></i>وصف العنصر:</label>
-            <textarea id="description" class="form-control" rows="4" placeholder="أدخل وصفًا للكتاب، الدرس، أو العرض" required></textarea>
+            <textarea id="description" class="form-control" rows="4" placeholder="أدخل وصفًا للمقال، الندوة، أو العرض" required></textarea>
         </div>
 
         <!-- رفع الملف -->
@@ -376,146 +462,180 @@ body {
 
 <script>
 	
+	// دالة التبديل بين الوضع الليلي والوضع العادي
+document.getElementById("night-mode-toggle").addEventListener("click", function () {
+    document.body.classList.toggle("night-mode");
+
+    // تغيير الأيقونة بين القمر والشمس
+    const icon = this.querySelector("i");
+    if (document.body.classList.contains("night-mode")) {
+        icon.classList.remove("fa-moon");
+        icon.classList.add("fa-sun");
+    } else {
+        icon.classList.remove("fa-sun");
+        icon.classList.add("fa-moon");
+    }
+
+    // حفظ التفضيل في localStorage
+    if (document.body.classList.contains("night-mode")) {
+        localStorage.setItem("nightMode", "enabled");
+    } else {
+        localStorage.setItem("nightMode", "disabled");
+    }
+});
+
+// تحميل الوضع الليلي من localStorage عند تحميل الصفحة
+window.addEventListener("load", function () {
+    const nightMode = localStorage.getItem("nightMode");
+    if (nightMode === "enabled") {
+        document.body.classList.add("night-mode");
+        const icon = document.querySelector("#night-mode-toggle i");
+        icon.classList.remove("fa-moon");
+        icon.classList.add("fa-sun");
+    }
+});
+	
 	
 	
     document.addEventListener("DOMContentLoaded", () => {
-        const form = document.getElementById("submissionForm");
+    const form = document.getElementById("submissionForm");
 
-        // عند إرسال النموذج
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
+    // عند إرسال النموذج
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
 
-            // جمع البيانات
-            const type = document.getElementById("type").value.trim();
-            const name = document.getElementById("name").value.trim();
-            const description = document.getElementById("description").value.trim();
-            const phone = document.getElementById("phone").value.trim();
-            const language = document.getElementById("language").value.trim();
+        // جمع البيانات
+        const type = document.getElementById("type").value.trim();
+        const name = document.getElementById("name").value.trim();
+        const description = document.getElementById("description").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const language = document.getElementById("language").value.trim();
 
-            // التحقق من الحقول المطلوبة
-            if (!type || !name || !description || !phone || !language) {
-                showModal(false, "يرجى تعبئة جميع الحقول المطلوبة.");
-                return;
-            }
-
-            // التعامل مع الحد اليومي للإرسال
-            const now = new Date().getTime();
-            const lastUploadTime = parseInt(localStorage.getItem("lastUploadTime")) || 0;
-            const requestCount = parseInt(localStorage.getItem("requestCount")) || 0;
-            const twentyFourHours = 24 * 60 * 60 * 1000;
-
-            if (requestCount >= 2 && now - lastUploadTime < twentyFourHours) {
-                const remainingTime = twentyFourHours - (now - lastUploadTime);
-                showModal(false, "لقد وصلت إلى الحد الأقصى من الطلبات. يرجى الانتظار حتى انتهاء العد التنازلي.");
-                startCountdown(remainingTime);
-                return;
-            }
-
-            if (now - lastUploadTime >= twentyFourHours) {
-                localStorage.setItem("requestCount", 1);
-            } else {
-                localStorage.setItem("requestCount", requestCount + 1);
-            }
-            localStorage.setItem("lastUploadTime", now);
-
-            // عرض رسالة نجاح
-            showModal(true, "تم إرسال النموذج بنجاح.");
-        });
-
-        // عرض النافذة المنبثقة
-        function showModal(isSuccess, message) {
-            const modal = document.getElementById("statusModal");
-            const icon = modal.querySelector(".icon");
-            const statusMessage = modal.querySelector("#statusMessage");
-
-            if (isSuccess) {
-                icon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
-                icon.style.color = "#0cbc58";
-                statusMessage.textContent = "تم الإرسال بنجاح. يرجى التوجه للبريد الإلكتروني.";
-                setModalButtonAction(true);
-            } else {
-                icon.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
-                icon.style.color = "#ff4d4d";
-                statusMessage.textContent = message || "حدث خطأ أثناء العملية.";
-                setModalButtonAction(false);
-            }
-
-            modal.style.display = "flex";
+        // التحقق من الحقول المطلوبة
+        if (!type || !name || !description || !phone || !language) {
+            showModal(false, "يرجى تعبئة جميع الحقول المطلوبة.");
+            return;
         }
 
-        // تعيين إجراء الزر في النافذة المنبثقة
-        function setModalButtonAction(isSuccess) {
-            const modalButton = document.querySelector(".modal-content button");
-            if (isSuccess) {
-                modalButton.onclick = function () {
-                    const name = document.getElementById("name").value;
-                    const description = document.getElementById("description").value;
-                    const phone = document.getElementById("phone").value;
-                    const language = document.getElementById("language").value;
-                    const type = document.getElementById("type").value;
+        // التعامل مع الحد اليومي للإرسال
+        const now = new Date().getTime();
+        const lastUploadTime = parseInt(localStorage.getItem("lastUploadTime")) || 0;
+        const requestCount = parseInt(localStorage.getItem("requestCount")) || 0;
+        const twentyFourHours = 24 * 60 * 60 * 1000;
 
-                    const emailSubject = encodeURIComponent("طلب جديد تم إرساله");
-                    const emailBody = encodeURIComponent(`
+        // تغيير الشرط من 2 إلى 5
+        if (requestCount >= 5 && now - lastUploadTime < twentyFourHours) {
+            const remainingTime = twentyFourHours - (now - lastUploadTime);
+            showModal(false, "لقد وصلت إلى الحد الأقصى من الطلبات (5 طلبات في اليوم). يرجى الانتظار حتى انتهاء العد التنازلي.");
+            startCountdown(remainingTime);
+            return;
+        }
+
+        if (now - lastUploadTime >= twentyFourHours) {
+            localStorage.setItem("requestCount", 1); // إعادة تعيين العد بعد 24 ساعة
+        } else {
+            localStorage.setItem("requestCount", requestCount + 1); // زيادة العد
+        }
+        localStorage.setItem("lastUploadTime", now);
+
+        // عرض رسالة نجاح
+        showModal(true, "تم إرسال النموذج بنجاح.");
+    });
+
+    // عرض النافذة المنبثقة
+    function showModal(isSuccess, message) {
+        const modal = document.getElementById("statusModal");
+        const icon = modal.querySelector(".icon");
+        const statusMessage = modal.querySelector("#statusMessage");
+
+        if (isSuccess) {
+            icon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+            icon.style.color = "#0cbc58";
+            statusMessage.textContent = "تم الإرسال بنجاح. يرجى التوجه للبريد الإلكتروني.";
+            setModalButtonAction(true);
+        } else {
+            icon.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
+            icon.style.color = "#ff4d4d";
+            statusMessage.textContent = message || "حدث خطأ أثناء العملية.";
+            setModalButtonAction(false);
+        }
+
+        modal.style.display = "flex";
+    }
+
+    // تعيين إجراء الزر في النافذة المنبثقة
+    function setModalButtonAction(isSuccess) {
+        const modalButton = document.querySelector(".modal-content button");
+        if (isSuccess) {
+            modalButton.onclick = function () {
+                const name = document.getElementById("name").value;
+                const description = document.getElementById("description").value;
+                const phone = document.getElementById("phone").value;
+                const language = document.getElementById("language").value;
+                const type = document.getElementById("type").value;
+
+                const emailSubject = encodeURIComponent("طلب جديد تم إرساله");
+                const emailBody = encodeURIComponent(`
 اسم العنصر: ${name}
 الوصف: ${description}
 رقم الهاتف: ${phone}
 اللغة: ${language}
 نوع الطلب: ${type}
 ⚠️ تنبيه : يرجى إعادة رفع الملف من داخل Gmail.
-                    `);
+                `);
 
-                    const mailtoLink = `mailto:master.n.r.l2024@gmail.com?subject=${emailSubject}&body=${emailBody}`;
-                    window.location.href = mailtoLink;
+                const mailtoLink = `mailto:master.n.r.l2024@gmail.com?subject=${emailSubject}&body=${emailBody}`;
+                window.location.href = mailtoLink;
 
-                    closeModal();
-                };
-            } else {
-                modalButton.onclick = closeModal;
-            }
-        }
-
-        // إغلاق النافذة المنبثقة
-        function closeModal() {
-            const modal = document.getElementById("statusModal");
-            modal.style.display = "none";
-        }
-
-        // بدء العد التنازلي
-        function startCountdown(duration) {
-    const countdownContainer = document.getElementById("countdownContainer");
-    const countdownElement = document.getElementById("countdown");
-    countdownContainer.style.display = "block";
-
-    const countdownInterval = setInterval(() => {
-        if (duration <= 0) {
-            clearInterval(countdownInterval);
-            countdownElement.textContent = "انتهى الوقت!";
-            countdownContainer.style.display = "none";
-            localStorage.setItem("requestCount", 0);
+                closeModal();
+            };
         } else {
-            const hours = Math.floor(duration / (1000 * 60 * 60));
-            const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((duration % (1000 * 60)) / 1000);
-
-            // تنسيق العرض بصيغة hh:mm:ss
-            countdownElement.textContent = `${hours.toString().padStart(2, '0')}h:${minutes.toString().padStart(2, '0')}m:${seconds.toString().padStart(2, '0')}s`;
-            duration -= 1000;
+            modalButton.onclick = closeModal;
         }
-    }, 1000);
-}
+    }
 
-        // التحقق من الحالة عند تحميل الصفحة
-        (function () {
-            const lastUploadTime = localStorage.getItem("lastUploadTime");
-            const requestCount = parseInt(localStorage.getItem("requestCount")) || 0;
-            const now = new Date().getTime();
-            const twentyFourHours = 24 * 60 * 60 * 1000;
+    // إغلاق النافذة المنبثقة
+    function closeModal() {
+        const modal = document.getElementById("statusModal");
+        modal.style.display = "none";
+    }
 
-            if (requestCount >= 2 && lastUploadTime && now - lastUploadTime < twentyFourHours) {
-                const remainingTime = twentyFourHours - (now - lastUploadTime);
-                showModal(false, "لقد وصلت إلى الحد الأقصى من الطلبات. يرجى الانتظار حتى انتهاء العد التنازلي.");
-                startCountdown(remainingTime);
+    // بدء العد التنازلي
+    function startCountdown(duration) {
+        const countdownContainer = document.getElementById("countdownContainer");
+        const countdownElement = document.getElementById("countdown");
+        countdownContainer.style.display = "block";
+
+        const countdownInterval = setInterval(() => {
+            if (duration <= 0) {
+                clearInterval(countdownInterval);
+                countdownElement.textContent = "انتهى الوقت!";
+                countdownContainer.style.display = "none";
+                localStorage.setItem("requestCount", 0);
+            } else {
+                const hours = Math.floor(duration / (1000 * 60 * 60));
+                const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((duration % (1000 * 60)) / 1000);
+
+                // تنسيق العرض بصيغة hh:mm:ss
+                countdownElement.textContent = `${hours.toString().padStart(2, '0')}h:${minutes.toString().padStart(2, '0')}m:${seconds.toString().padStart(2, '0')}s`;
+                duration -= 1000;
             }
-        })();
-    });
+        }, 1000);
+    }
+
+    // التحقق من الحالة عند تحميل الصفحة
+    (function () {
+        const lastUploadTime = localStorage.getItem("lastUploadTime");
+        const requestCount = parseInt(localStorage.getItem("requestCount")) || 0;
+        const now = new Date().getTime();
+        const twentyFourHours = 24 * 60 * 60 * 1000;
+
+        if (requestCount >= 5 && lastUploadTime && now - lastUploadTime < twentyFourHours) {
+            const remainingTime = twentyFourHours - (now - lastUploadTime);
+            showModal(false, "لقد وصلت إلى الحد الأقصى من الطلبات (5 طلبات في اليوم). يرجى الانتظار حتى انتهاء العد التنازلي.");
+            startCountdown(remainingTime);
+        }
+    })();
+});
 </script>
