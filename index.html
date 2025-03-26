@@ -2,640 +2,789 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <title>إضافة عنصر جديد</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الإدارة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --dark-color: #34495e;
+            --light-color: #ecf0f1;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
         body {
-    font-family: 'Cairo', Tahoma, Geneva, Verdana, sans-serif;
-    background: #fff;
-    color: #333;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh; /* جعل الجسم يمتد لملء الشاشة بالكامل */
-}
-
-.container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    width: 100%; /* جعل النموذج يمتد بالكامل */
-    max-width: 1000px; /* زيادة العرض الأقصى */
-    height: auto; /* جعل الارتفاع يتكيف مع المحتوى */
-    box-sizing: border-box;
-    overflow-y: auto; /* إضافة تمرير داخلي عند الحاجة */
-    margin: 0px; /* إضافة هامش خارجي */
-}
-        h2 {
-            margin-bottom: 20px;
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f5f7fa;
             color: #333;
-            text-align: center;
-            font-weight: bold;
-            text-transform: uppercase;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
         }
-        .form-group {
+        
+        .container {
+            width: 100%;
+            max-width: 100%;
+            background: #fff;
+            border-radius: 0;
+            box-shadow: none;
+            padding: 25px;
+            margin-bottom: 0;
+            box-sizing: border-box;
+        }
+        
+        .content-container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h2 {
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-color);
+        }
+        
+        .user-list, .blocked-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
             margin-bottom: 20px;
         }
-        label {
-            display: block;
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 10px;
+        
+        .user-card, .blocked-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
-        select, input, textarea, button {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+        
+        .user-card:hover, .blocked-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .user-card span, .blocked-card span {
+            font-weight: 500;
             font-size: 16px;
-            box-sizing: border-box;
-            transition: all 0.3s ease-in-out;
+            color: var(--dark-color);
         }
-        select:hover, input:hover, textarea:hover {
-            border-color: #4a90e2;
+        
+        .user-card i, .blocked-card i {
+            color: var(--primary-color);
+            font-size: 18px;
         }
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: #0cbc58;
-            box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+        
+        .block-controls {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 20px;
         }
-        button {
-            background-color: #0cbc58;
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn i {
+            margin-left: 5px;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+        
+        .btn-secondary {
+            background-color: var(--dark-color);
+            border-color: var(--dark-color);
+        }
+        
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--dark-color);
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .back-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .submissions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .submission {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            transition: var(--transition);
+            position: relative;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            margin: 0 10px;
+        }
+        
+        .submission:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .submission-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .submission p {
+            margin: 8px 0;
+            font-size: 14px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .submission p i {
+            color: var(--primary-color);
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .submission p strong {
+            color: var(--dark-color);
+            font-weight: 500;
+            min-width: 80px;
+        }
+        
+        .submission p span {
+            flex: 1;
+        }
+        
+        .submission-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .submission button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            flex-grow: 1;
+        }
+        
+        .submission button i {
+            margin-left: 5px;
+            font-size: 12px;
+        }
+        
+        .submission button.accept {
+            background-color: var(--secondary-color);
             color: #fff;
+        }
+        
+        .submission button.reject {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+        
+        .submission button.hold {
+            background-color: var(--warning-color);
+            color: #fff;
+        }
+        
+        .submission button.delete {
+            background-color: #95a5a6;
+            color: #fff;
+        }
+        
+        .submission button.download {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+        
+        .submission button.preview {
+            background-color: #3498db;
+            color: #fff;
+        }
+        
+        .block-actions {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .block-actions button {
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: var(--border-radius);
             border: none;
             cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-            padding: 12px;
-            border-radius: 8px;
-            transition: background-color 0.3s ease-in-out;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        button:hover {
-            background-color: #0cbc58;
+        
+        .block-btn {
+            background-color: var(--danger-color);
         }
-.form-note {
-    font-size: 12px;
-    color: #999;
-    margin-top: -18px; /* رفع النص للأعلى قليلاً */
-    margin-bottom: 15px; /* إضافة مسافة أسفل النص */
-    margin-right: 10px; /* إبعاد النص عن الجانب الأيمن */
-    text-align: right; /* محاذاة النص إلى اليمين */
-}
-        .hidden {
+        
+        .unblock-btn {
+            background-color: var(--secondary-color);
+        }
+        
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+        }
+        
+        .pending .status-badge {
+            background-color: var(--warning-color);
+        }
+        
+        .accepted .status-badge {
+            background-color: var(--secondary-color);
+        }
+        
+        .rejected .status-badge {
+            background-color: var(--danger-color);
+        }
+        
+        .on-hold .status-badge {
+            background-color: #95a5a6;
+        }
+        
+        #pdf-viewer, #image-viewer, #video-viewer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 80%;
+            max-width: 800px;
+            height: 80%;
+            background: rgba(0, 0, 0, 0.9);
             display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transform: translate(-50%, -50%);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            z-index: 1000;
         }
-.icon {
-    margin-left: 8px; /* إضافة مسافة بين الأيقونة والنص */
-    color: #007bff;
-}
-        input[type="file"] {
-            border: 2px dashed #ddd;
-            text-align: center;
-            padding: 25px;
+        
+        #pdf-canvas, #image-display, #video-display {
+            border: 1px solid #fff;
+            background: #fff;
+            margin-bottom: 15px;
+            width: 100%;
+            height: 100%;
+            max-height: calc(100% - 50px);
+        }
+        
+        #pdf-controls, #image-controls, #video-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        #pdf-controls button, #image-controls button, #video-controls button {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
             cursor: pointer;
-            background: #f9f9f9;
-            color: #555;
-            border-radius: 10px;
-            transition: all 0.3s ease-in-out;
+            color: #fff;
+            background-color: var(--primary-color);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
         }
-        input[type="file"]:hover {
-            border-color: #0cbc58;
-            background: #eef6ff;
+        
+        #pdf-controls button:hover, #image-controls button:hover, #video-controls button:hover {
+            transform: scale(1.1);
         }
-        input[type="file"]::file-selector-button {
-            display: none;
+        
+        #pdf-controls button.close, #image-controls button.close, #video-controls button.close {
+            background-color: var(--danger-color);
         }
-        /* تصميم النافذة المنبثقة */
-.modal {
-    display: none; /* إخفاء النافذة بشكل افتراضي */
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5); /* خلفية مظللة */
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-content {
-    background-color: #fff;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.modal-content .icon {
-    font-size: 48px;
-    margin-bottom: 10px;
-}
-
-.modal-content.success .icon {
-    color: #0cbc58;
-}
-
-.modal-content.error .icon {
-    color: #ff4d4d;
-}
-
-.modal-content h2 {
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
-.modal-content button {
-    margin-top: 15px;
-    background-color: #0cbc58;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
-.modal-content button:hover {
-    background-color: #099c48;
-}
-
-
-    /* تحسين تصميم زر الإرسال */
-    button[type="submit"] {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: auto; /* بدلاً من الامتداد الكامل */
-        min-width: 180px; /* تحديد عرض أدنى */
-        max-width: 200px; /* تحديد عرض أقصى */
-        padding: 10px 15px; /* تقليل الحواف الداخلية */
-        border-radius: 50px; /* جعل الزر مستدير الحواف */
-        font-size: 16px; /* تصغير حجم النص */
-        font-weight: bold;
-        text-transform: uppercase; /* جعل النص بأحرف كبيرة */
-        letter-spacing: 1px; /* تحسين تباعد الأحرف */
-        color: #fff;
-        background: linear-gradient(to right, #0cbc58, #099c48); /* إضافة تدرج لوني */
-        border: none;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* إضافة ظل */
-        cursor: pointer;
-        transition: all 0.3s ease-in-out;
-        margin: 20px auto 0; /* إضافة مسافة علوية وتوسيط الزر */
-    }
-
-    button[type="submit"]:hover {
-        background: linear-gradient(to right, #099c48, #0cbc58); /* عكس التدرج اللوني عند التحويم */
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* تعزيز الظل */
-        transform: scale(1.05); /* تكبير الزر قليلاً */
-    }
-
-    /* تحسين أيقونة الزر */
-button[type="submit"] .icon {
-    margin-right: 8px; /* مسافة بين الأيقونة والنص */
-    font-size: 18px; /* تصغير حجم الأيقونة */
-    color: #fff; /* تغيير لون الأيقونة إلى الأبيض */
-}
-
-.back-icon {
-    position: absolute; /* لتكون في المكان الذي يتم تحديده */
-    top: 20px; /* المسافة من الأعلى */
-    left: 10px; /* المسافة من اليسار */
-    background-color: #0cbc58;
-    color: #fff;
-    border-radius: 8px; /* حواف مربعة بدلاً من دائرية */
-    padding: 10px; /* تقليل الحواف الداخلية */
-    font-size: 20px;
-    text-decoration: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    z-index: 1000; /* تأكد من أن الأيقونة في أعلى العناصر */
-    width: 40px; /* تحديد عرض ثابت */
-    height: 40px; /* تحديد ارتفاع ثابت */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.back-icon:hover {
-    background-color: #099c48;
-    transform: scale(1.1);
-}
-
-/* اجعل الأيقونة تتحرك مع التمرير */
-body {
-    position: relative;
-}
-
-.container {
-    position: relative;
-}
-/* أيقونة الوضع الليلي */
-.night-mode-icon {
-    position: absolute;
-    top: 20px;
-    right: 10px;
-    background-color: #0cbc58;
-    color: #fff;
-    border-radius: 8px;
-    padding: 10px;
-    font-size: 20px;
-    cursor: pointer;
-    z-index: 1000;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.night-mode-icon:hover {
-    background-color: #099c48;
-    transform: scale(1.1);
-}
-
-/* أنماط الوضع الليلي */
-body.night-mode {
-    background-color: #121212;
-    color: #ffffff;
-}
-
-body.night-mode .container {
-    background-color: #1a1a1a;
-    color: #ffffff;
-}
-
-body.night-mode h2 {
-    color: #ffffff;
-}
-
-body.night-mode label {
-    color: #cccccc;
-}
-
-body.night-mode input,
-body.night-mode select,
-body.night-mode textarea {
-    background-color: #333;
-    color: #ffffff;
-    border-color: #555;
-}
-
-body.night-mode input:focus,
-body.night-mode select:focus,
-body.night-mode textarea:focus {
-    border-color: #0cbc58;
-    box-shadow: 0 0 8px rgba(12, 188, 88, 0.4);
-}
-
-body.night-mode .form-note {
-    color: #999;
-}
-
-body.night-mode .modal-content {
-    background-color: #1a1a1a;
-    color: #ffffff;
-}
-
-body.night-mode .modal-content h2 {
-    color: #ffffff;
-}
-
-body.night-mode .modal-content button {
-    background-color: #0cbc58;
-    color: #ffffff;
-}
-
+        
+        #page-count {
+            color: white;
+            font-size: 14px;
+            margin: 0 5px;
+            min-width: 50px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .user-list, .blocked-list, .submissions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            #pdf-viewer, #image-viewer, #video-viewer {
+                width: 95%;
+                height: 70%;
+            }
+            
+            .submission {
+                padding: 20px 15px;
+                margin: 0;
+            }
+        }
     </style>
 </head>
 <body>
-	
-
-
-<div id="statusModal" class="modal">
-    <div class="modal-content">
-        <div class="icon"></div>
-        <h2 id="statusMessage"></h2>
-        <button onclick="closeModal()">حسنًا</button>
+    <!-- قسم المستخدمون -->
+    <div class="container" id="usersContainer">
+        <div class="content-container">
+            <h2><i class="fas fa-users"></i> المستخدمون</h2>
+            <div class="user-list" id="userList">
+                <!-- سيتم ملء المستخدمين بواسطة JavaScript -->
+            </div>
+        </div>
     </div>
-</div>
 
-
-<div class="container">
-    <h2><img src="https://i.ibb.co/NLGVvbq/Picsart-25-01-06-01-24-59-528.png" alt="صورة" class="icon" style="width: 40px; height: auto; margin-left: 8px;">إضافة عنصر</h2>
-    
-    <a href="https://master-nrl.github.io/home/" class="back-icon">
-        <i class="fa-solid fa-circle-chevron-left"></i>
-    </a>
-    
-    <!-- أيقونة الوضع الليلي -->
-    <div id="night-mode-toggle" class="night-mode-icon">
-        <i class="fas fa-moon"></i>
+    <!-- قسم المستخدمون المحظورون -->
+    <div class="container" id="blockedUsersContainer">
+        <div class="content-container">
+            <div class="block-controls">
+                <button class="btn btn-danger" onclick="unblockAllUsers()">
+                    <i class="fa fa-unlock"></i> فك الحظر عن الجميع
+                </button>
+            </div>
+            <h2><i class="fas fa-ban"></i> المستخدمون المحظورون</h2>
+            <div class="blocked-list" id="blockedList">
+                <!-- سيتم ملء المستخدمين المحظورين بواسطة JavaScript -->
+            </div>
+        </div>
     </div>
-    
-    
-    
-    <form id="submissionForm">
-<!-- اختيار النوع -->
-<div class="form-group">
-    <label for="type"><i class="fa-solid fa-list-ul icon"></i>اختر النوع:</label>
-    <select id="type" class="form-select" required>
-        <option value="" disabled selected>-- اختر النوع --</option>
-        <option value="📄 مقال">📄 مقال</option>
-        <option value="🎤 ندوة">🎤 ندوة</option>
-        <option value="💡 عرض">💡 عرض</option>
-    </select>
-</div>
 
-        <!-- اختيار اللغة -->
-        <div class="form-group">
-            <label for="language"><i class="fa-solid fa-language icon"></i>اختر اللغة:</label>
-            <select id="language" class="form-select" required>
-                <option value="" disabled selected>-- اختر اللغة --</option>
-                <option value="العربية">العربية</option>
-                <option value="الفرنسية">الفرنسية</option>
-                <option value="الإنجليزية">الإنجليزية</option>
-            </select>
+    <!-- قسم عرض الطلبات -->
+    <div class="container" id="submissionsContainer" style="display: none;">
+        <div class="content-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-file-alt"></i> طلبات المستخدم</h2>
+                <div class="back-btn" onclick="showUsers()">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+            <div class="submissions-grid" id="submissionsList">
+                <!-- سيتم ملء الطلبات بواسطة JavaScript -->
+            </div>
         </div>
+    </div>
 
-        <!-- اسم العنصر -->
-        <div class="form-group">
-            <label for="name"><i class="fa-solid fa-book-open icon"></i>اسم العنصر:</label>
-            <input type="text" id="name" class="form-control" placeholder="أدخل اسم المقال، الندوة، أو العرض" required>
+    <div id="pdf-viewer">
+        <canvas id="pdf-canvas"></canvas>
+        <div id="pdf-controls">
+            <button id="prev-page" title="السابق"><i class="fas fa-arrow-right"></i></button>
+            <span id="page-count">0/0</span>
+            <button id="next-page" title="التالي"><i class="fas fa-arrow-left"></i></button>
+            <button id="close-pdf" class="close" title="إغلاق"><i class="fas fa-times"></i></button>
         </div>
+    </div>
 
-        <!-- باقي الحقول كما هي -->
-    
-
-        <!-- لغة الكتاب -->
-        <div class="form-group hidden" id="bookLanguageGroup">
-            <label for="bookLanguage"><i class="fa-solid fa-language icon"></i>لغة الكتاب:</label>
-            <select id="bookLanguage" class="form-select">
-                <option value="" disabled selected>-- اختر اللغة --</option>
-                <option value="arabic">العربية</option>
-                <option value="french">الفرنسية</option>
-                <option value="english">الإنجليزية</option>
-            </select>
+    <div id="image-viewer">
+        <img id="image-display" src="" alt="Image Preview">
+        <div id="image-controls">
+            <button id="close-image" class="close" title="إغلاق"><i class="fas fa-times"></i></button>
         </div>
+    </div>
 
-        <!-- خيارات نوع الدرس -->
-        <div class="form-group hidden" id="lessonTypeGroup">
-            <label for="lessonType"><i class="fa-solid fa-chalkboard-teacher icon"></i>نوع الدرس:</label>
-            <select id="lessonType" class="form-select">
-                <option value="" disabled selected>-- اختر نوع الدرس --</option>
-                <option value="online">درس أونلاين</option>
-                <option value="offline">درس حضوري</option>
-            </select>
+    <div id="video-viewer">
+        <video id="video-display" controls></video>
+        <div id="video-controls">
+            <button id="close-video" class="close" title="إغلاق"><i class="fas fa-times"></i></button>
         </div>
+    </div>
 
-        <!-- لغة الدرس -->
-        <div class="form-group hidden" id="lessonLanguageGroup">
-            <label for="lessonLanguage"><i class="fa-solid fa-globe icon"></i>لغة الدرس:</label>
-            <select id="lessonLanguage" class="form-select">
-                <option value="" disabled selected>-- اختر اللغة --</option>
-                <option value="arabic">العربية</option>
-                <option value="french">الفرنسية</option>
-                <option value="english">الإنجليزية</option>
-            </select>
-        </div>
-
-        <!-- المادة المتعلقة بالدرس -->
-        <div class="form-group hidden" id="lessonSubjectGroup">
-            <label for="lessonSubject"><i class="fa-solid fa-bookmark icon"></i>المادة المتعلقة بالدرس:</label>
-            <input type="text" id="lessonSubject" class="form-control" placeholder="أدخل المادة">
-        </div>
-
+    <script>
+        // متغيرات PDF
+        let pdfDoc = null,
+            pageNum = 1,
+            pageRendering = false,
+            pageNumPending = null,
+            scale = 1.5;
         
-
-        <!-- المادة المتعلقة بالعرض -->
-        <div class="form-group hidden" id="offerSubjectGroup">
-            <label for="offerSubject"><i class="fa-solid fa-folder-open icon"></i>المادة المتعلقة بالعرض:</label>
-            <input type="text" id="offerSubject" class="form-control" placeholder="أدخل المادة">
-        </div>
-
-        <!-- وصف العنصر -->
-        <div class="form-group">
-            <label for="description"><i class="fa-solid fa-file-lines icon"></i>وصف العنصر:</label>
-            <textarea id="description" class="form-control" rows="4" placeholder="أدخل وصفًا للمقال، الندوة، أو العرض" required></textarea>
-        </div>
-
-        <!-- رفع الملف -->
-        <div class="form-group">
-            <label for="file"><i class="fa-solid fa-upload icon"></i>رفع الملف:</label>
-            <input type="file" id="file" accept=".pdf, .zip, .jpg, .png, .mp4, .avi" required>
-            <p class="form-note">الملفات المدعومة: PDF, ZIP, JPG, PNG, MP4, AVI</p>
-        </div>
-
-<!-- حقل رقم الهاتف -->
-<div class="form-group">
-    <label for="phone"><i class="fa-brands fa-whatsapp icon"></i>رقم الهاتف:</label>
-    <input type="tel" id="phone" class="form-control" placeholder="+212" required>
-</div>
-
-<!-- عداد العد التنازلي -->
-<div id="countdownContainer" style="display: none; text-align: center; margin-top: 10px;">
-    <div id="countdownFrame" style="display: inline-block; padding: 1px; border: 2px solid #0cbc58; border-radius: 8px; background: #f9f9f9; color: #0cbc58; font-size: 25px; font-weight: bold; font-family: 'Segoe UI', sans-serif;">
-        <span id="countdown">23h:01:00</span>
-    </div>
-</div>
-
-        <!-- زر الإرسال -->
-        <!-- HTML لزر الإرسال -->
-<button type="submit" class="btn btn-primary">
-    <i class="fa-solid fa-paper-plane icon"></i>إرسال
-</button>
-    </form>
-</div>
-
-
-<script>
-	
-	// دالة التبديل بين الوضع الليلي والوضع العادي
-document.getElementById("night-mode-toggle").addEventListener("click", function () {
-    document.body.classList.toggle("night-mode");
-
-    // تغيير الأيقونة بين القمر والشمس
-    const icon = this.querySelector("i");
-    if (document.body.classList.contains("night-mode")) {
-        icon.classList.remove("fa-moon");
-        icon.classList.add("fa-sun");
-    } else {
-        icon.classList.remove("fa-sun");
-        icon.classList.add("fa-moon");
-    }
-
-    // حفظ التفضيل في localStorage
-    if (document.body.classList.contains("night-mode")) {
-        localStorage.setItem("nightMode", "enabled");
-    } else {
-        localStorage.setItem("nightMode", "disabled");
-    }
-});
-
-// تحميل الوضع الليلي من localStorage عند تحميل الصفحة
-window.addEventListener("load", function () {
-    const nightMode = localStorage.getItem("nightMode");
-    if (nightMode === "enabled") {
-        document.body.classList.add("night-mode");
-        const icon = document.querySelector("#night-mode-toggle i");
-        icon.classList.remove("fa-moon");
-        icon.classList.add("fa-sun");
-    }
-});
-	
-	
-	
-    document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("submissionForm");
-
-    // عند إرسال النموذج
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        // جمع البيانات
-        const type = document.getElementById("type").value.trim();
-        const name = document.getElementById("name").value.trim();
-        const description = document.getElementById("description").value.trim();
-        const phone = document.getElementById("phone").value.trim();
-        const language = document.getElementById("language").value.trim();
-
-        // التحقق من الحقول المطلوبة
-        if (!type || !name || !description || !phone || !language) {
-            showModal(false, "يرجى تعبئة جميع الحقول المطلوبة.");
-            return;
+        function showUsers() {
+            document.getElementById('usersContainer').style.display = 'block';
+            document.getElementById('blockedUsersContainer').style.display = 'block';
+            document.getElementById('submissionsContainer').style.display = 'none';
         }
 
-        // التعامل مع الحد اليومي للإرسال
-        const now = new Date().getTime();
-        const lastUploadTime = parseInt(localStorage.getItem("lastUploadTime")) || 0;
-        const requestCount = parseInt(localStorage.getItem("requestCount")) || 0;
-        const twentyFourHours = 24 * 60 * 60 * 1000;
-
-        // تغيير الشرط من 2 إلى 5
-        if (requestCount >= 5 && now - lastUploadTime < twentyFourHours) {
-            const remainingTime = twentyFourHours - (now - lastUploadTime);
-            showModal(false, "لقد وصلت إلى الحد الأقصى من الطلبات (5 طلبات في اليوم). يرجى الانتظار حتى انتهاء العد التنازلي.");
-            startCountdown(remainingTime);
-            return;
+        function loadUsers() {
+            const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
+            const users = [...new Set(submissions.map(sub => sub.userId))];
+            const userList = document.getElementById("userList");
+            userList.innerHTML = users.map(userId => `
+                <div class="user-card" onclick="loadUserSubmissions('${userId}')">
+                    <span><i class="fas fa-user"></i> المستخدم ${userId}</span>
+                    <i class="fas fa-angle-left"></i>
+                </div>
+            `).join("");
         }
 
-        if (now - lastUploadTime >= twentyFourHours) {
-            localStorage.setItem("requestCount", 1); // إعادة تعيين العد بعد 24 ساعة
-        } else {
-            localStorage.setItem("requestCount", requestCount + 1); // زيادة العد
-        }
-        localStorage.setItem("lastUploadTime", now);
-
-        // عرض رسالة نجاح
-        showModal(true, "تم إرسال النموذج بنجاح.");
-    });
-
-    // عرض النافذة المنبثقة
-    function showModal(isSuccess, message) {
-        const modal = document.getElementById("statusModal");
-        const icon = modal.querySelector(".icon");
-        const statusMessage = modal.querySelector("#statusMessage");
-
-        if (isSuccess) {
-            icon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
-            icon.style.color = "#0cbc58";
-            statusMessage.textContent = "تم الإرسال بنجاح. يرجى التوجه للبريد الإلكتروني.";
-            setModalButtonAction(true);
-        } else {
-            icon.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
-            icon.style.color = "#ff4d4d";
-            statusMessage.textContent = message || "حدث خطأ أثناء العملية.";
-            setModalButtonAction(false);
+        function loadBlockedUsers() {
+            const blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
+            const blockedList = document.getElementById("blockedList");
+            blockedList.innerHTML = blockedUsers.map(phone => `
+                <div class="blocked-card">
+                    <span><i class="fas fa-phone"></i> ${phone}</span>
+                    <i class="fa fa-unlock" onclick="unblockUser('${phone}', event)"></i>
+                </div>
+            `).join("");
         }
 
-        modal.style.display = "flex";
-    }
+        window.loadUserSubmissions = function(userId) {
+            const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
+            const blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
+            const userSubmissions = submissions.filter(submission => submission.userId === userId);
+            const submissionsList = document.getElementById("submissionsList");
+            
+            submissionsList.innerHTML = userSubmissions.map((submission, index) => {
+                const isBlocked = blockedUsers.includes(submission.phone);
+                return `
+                <div class="submission ${submission.status === 'في انتظار المراجعة' ? 'pending' : 
+                    submission.status === 'مقبول' ? 'accepted' : 
+                    submission.status === 'معلق' ? 'on-hold' : 'rejected'}">
+                    
+                    <div class="block-actions">
+                        ${isBlocked ? `
+                        <button class="unblock-btn" onclick="unblockUser('${submission.phone}', event)">
+                            <i class="fas fa-unlock"></i>
+                        </button>
+                        ` : `
+                        <button class="block-btn" onclick="blockUser('${submission.phone}', event)">
+                            <i class="fas fa-ban"></i>
+                        </button>
+                        `}
+                    </div>
+                    
+                    <div class="submission-header">
+                        <span class="status-badge">${submission.status}</span>
+                    </div>
+                    
+                    <p>
+                        <i class="fas fa-user-tag"></i>
+                        <strong>اسم العنصر:</strong>
+                        <span>${submission.name}</span>
+                    </p>
+                    
+                    <p>
+                        <i class="fas fa-tag"></i>
+                        <strong>النوع:</strong>
+                        <span>${submission.type}</span>
+                    </p>
+                    
+                    <p>
+                        <i class="fas fa-align-left"></i>
+                        <strong>الوصف:</strong>
+                        <span>${submission.description}</span>
+                    </p>
+                    
+                    <p>
+                        <i class="fas fa-phone"></i>
+                        <strong>رقم الهاتف:</strong>
+                        <span>${submission.phone}</span>
+                    </p>
+                    
+                    <p>
+                        <i class="fas fa-graduation-cap"></i>
+                        <strong>الفصل:</strong>
+                        <span>${submission.semester}</span>
+                    </p>
+                    
+                    <p>
+                        <i class="fas fa-file"></i>
+                        <strong>الملف:</strong>
+                        <span>${submission.fileName || "لا يوجد ملف"}</span>
+                    </p>
 
-    // تعيين إجراء الزر في النافذة المنبثقة
-    function setModalButtonAction(isSuccess) {
-        const modalButton = document.querySelector(".modal-content button");
-        if (isSuccess) {
-            modalButton.onclick = function () {
-                const name = document.getElementById("name").value;
-                const description = document.getElementById("description").value;
-                const phone = document.getElementById("phone").value;
-                const language = document.getElementById("language").value;
-                const type = document.getElementById("type").value;
+                    <p>
+                        <i class="fa-solid fa-image"></i>
+                        <strong>غلاف الصورة:</strong>
+                        <span>${submission.coverImageName || "لا يوجد غلاف"}</span>
+                    </p>
+                    
+                    <div class="submission-actions">
+                        <button class="accept" onclick="acceptSubmission(${index})">
+                            <i class="fas fa-check"></i> قبول
+                        </button>
+                        <button class="reject" onclick="rejectSubmission(${index})">
+                            <i class="fas fa-times"></i> رفض
+                        </button>
+                        <button class="hold" onclick="holdSubmission(${index})">
+                            <i class="fas fa-pause"></i> تعليق
+                        </button>
+                        <button class="delete" onclick="deleteSubmission(${index})">
+                            <i class="fas fa-trash"></i> مسح
+                        </button>
+                        ${submission.fileName ? `
+                        <button class="preview" onclick="previewFile('${submission.fileName}', '${submission.fileData}')">
+                            <i class="fas fa-eye"></i> معاينة
+                        </button>
+                        <button class="download" onclick="downloadFile('${submission.fileName}', '${submission.fileData}')">
+                            <i class="fas fa-download"></i> تحميل
+                        </button>
+                        ` : ''}
+                        ${submission.coverImageName ? `
+                        <button class="preview" onclick="previewImage('${submission.coverImageName}', '${submission.coverImageData}')">
+                            <i class="fas fa-eye"></i> معاينة الغلاف
+                        </button>
+                        ` : ''}
+                    </div>
+                </div>
+                `;
+            }).join("");
+            
+            document.getElementById('usersContainer').style.display = 'none';
+            document.getElementById('blockedUsersContainer').style.display = 'none';
+            document.getElementById('submissionsContainer').style.display = 'block';
+        };
 
-                const emailSubject = encodeURIComponent("طلب جديد تم إرساله");
-                const emailBody = encodeURIComponent(`
-اسم العنصر: ${name}
-الوصف: ${description}
-رقم الهاتف: ${phone}
-اللغة: ${language}
-نوع الطلب: ${type}
-⚠️ تنبيه : يرجى إعادة رفع الملف من داخل Gmail.
-                `);
-
-                const mailtoLink = `mailto:master.n.r.l2024@gmail.com?subject=${emailSubject}&body=${emailBody}`;
-                window.location.href = mailtoLink;
-
-                closeModal();
-            };
-        } else {
-            modalButton.onclick = closeModal;
-        }
-    }
-
-    // إغلاق النافذة المنبثقة
-    function closeModal() {
-        const modal = document.getElementById("statusModal");
-        modal.style.display = "none";
-    }
-
-    // بدء العد التنازلي
-    function startCountdown(duration) {
-        const countdownContainer = document.getElementById("countdownContainer");
-        const countdownElement = document.getElementById("countdown");
-        countdownContainer.style.display = "block";
-
-        const countdownInterval = setInterval(() => {
-            if (duration <= 0) {
-                clearInterval(countdownInterval);
-                countdownElement.textContent = "انتهى الوقت!";
-                countdownContainer.style.display = "none";
-                localStorage.setItem("requestCount", 0);
+        window.unblockUser = function(phone, event) {
+            event.stopPropagation();
+            let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
+            if (blockedUsers.includes(phone)) {
+                blockedUsers = blockedUsers.filter(user => user !== phone);
+                localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
+                alert(`تم فك الحظر عن المستخدم برقم الهاتف: ${phone}`);
+                loadBlockedUsers();
+                const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
+                const user = submissions.find(sub => sub.phone === phone);
+                if (user) loadUserSubmissions(user.userId);
             } else {
-                const hours = Math.floor(duration / (1000 * 60 * 60));
-                const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((duration % (1000 * 60)) / 1000);
-
-                // تنسيق العرض بصيغة hh:mm:ss
-                countdownElement.textContent = `${hours.toString().padStart(2, '0')}h:${minutes.toString().padStart(2, '0')}m:${seconds.toString().padStart(2, '0')}s`;
-                duration -= 1000;
+                alert(`المستخدم برقم الهاتف: ${phone} غير محظور.`);
             }
-        }, 1000);
-    }
+        };
 
-    // التحقق من الحالة عند تحميل الصفحة
-    (function () {
-        const lastUploadTime = localStorage.getItem("lastUploadTime");
-        const requestCount = parseInt(localStorage.getItem("requestCount")) || 0;
-        const now = new Date().getTime();
-        const twentyFourHours = 24 * 60 * 60 * 1000;
+        window.unblockAllUsers = function() {
+            if (confirm("هل أنت متأكد أنك تريد فك الحظر عن جميع المستخدمين؟")) {
+                localStorage.removeItem("blockedUsers");
+                alert("تم فك الحظر عن جميع المستخدمين.");
+                loadBlockedUsers();
+            }
+        };
 
-        if (requestCount >= 5 && lastUploadTime && now - lastUploadTime < twentyFourHours) {
-            const remainingTime = twentyFourHours - (now - lastUploadTime);
-            showModal(false, "لقد وصلت إلى الحد الأقصى من الطلبات (5 طلبات في اليوم). يرجى الانتظار حتى انتهاء العد التنازلي.");
-            startCountdown(remainingTime);
+        function renderPage(num) {
+            pageRendering = true;
+            pdfDoc.getPage(num).then(page => {
+                const viewport = page.getViewport({scale: scale});
+                const pdfCanvas = document.getElementById("pdf-canvas");
+                const ctx = pdfCanvas.getContext("2d");
+                pdfCanvas.height = viewport.height;
+                pdfCanvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+                const renderTask = page.render(renderContext);
+
+                renderTask.promise.then(() => {
+                    pageRendering = false;
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                });
+                
+                document.getElementById('page-count').textContent = `${num}/${pdfDoc.numPages}`;
+            });
+
+            document.getElementById('prev-page').disabled = (num <= 1);
+            document.getElementById('next-page').disabled = (num >= pdfDoc.numPages);
         }
-    })();
-});
-</script>
+
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        function onPrevPage() {
+            if (pageNum <= 1) {
+                return;
+            }
+            pageNum--;
+            queueRenderPage(pageNum);
+        }
+
+        function onNextPage() {
+            if (pageNum >= pdfDoc.numPages) {
+                return;
+            }
+            pageNum++;
+            queueRenderPage(pageNum);
+        }
+
+        window.acceptSubmission = function(index) {
+            const submissions = JSON.parse(localStorage.getItem("submissions"));
+            submissions[index].status = 'مقبول';
+            localStorage.setItem("submissions", JSON.stringify(submissions));
+            loadUserSubmissions(submissions[index].userId);
+            alert("تم قبول الطلب بنجاح.");
+        };
+
+        window.rejectSubmission = function(index) {
+            const submissions = JSON.parse(localStorage.getItem("submissions"));
+            submissions[index].status = 'مرفوض';
+            localStorage.setItem("submissions", JSON.stringify(submissions));
+            loadUserSubmissions(submissions[index].userId);
+            alert("تم رفض الطلب بنجاح.");
+        };
+
+        window.holdSubmission = function(index) {
+            const submissions = JSON.parse(localStorage.getItem("submissions"));
+            submissions[index].status = 'معلق';
+            localStorage.setItem("submissions", JSON.stringify(submissions));
+            loadUserSubmissions(submissions[index].userId);
+            alert("تم تعليق الطلب بنجاح.");
+        };
+
+        window.deleteSubmission = function(index) {
+            if (confirm("هل أنت متأكد أنك تريد حذف هذا الطلب؟")) {
+                const submissions = JSON.parse(localStorage.getItem("submissions"));
+                const userId = submissions[index].userId;
+                submissions.splice(index, 1);
+                localStorage.setItem("submissions", JSON.stringify(submissions));
+                loadUserSubmissions(userId);
+                alert("تم حذف الطلب بنجاح.");
+            }
+        };
+
+        window.previewFile = function(fileName, fileData) {
+            const fileType = fileName.split('.').pop().toLowerCase();
+            if (fileType === 'pdf') {
+                pdfjsLib.getDocument(fileData).promise.then(pdfDoc_ => {
+                    pdfDoc = pdfDoc_;
+                    pageNum = 1;
+                    renderPage(pageNum);
+                    document.getElementById('pdf-viewer').style.display = 'flex';
+                }).catch((error) => {
+                    console.error("Error opening PDF: ", error.message);
+                    alert("حدث خطأ أثناء فتح ملف PDF.");
+                });
+            } else if (fileType === 'jpg' || fileType === 'png') {
+                previewImage(fileName, fileData);
+            } else if (fileType === 'mp4' || fileType === 'avi') {
+                previewVideo(fileName, fileData);
+            } else {
+                alert("نوع الملف غير مدعوم للمعاينة.");
+            }
+        };
+
+        window.previewImage = function(fileName, fileData) {
+            document.getElementById('image-display').src = fileData;
+            document.getElementById('image-viewer').style.display = 'flex';
+        };
+
+        window.previewVideo = function(fileName, fileData) {
+            const videoDisplay = document.getElementById('video-display');
+            videoDisplay.src = fileData;
+            videoDisplay.controls = true;
+            document.getElementById('video-viewer').style.display = 'flex';
+        };
+
+        window.downloadFile = function(fileName, fileData) {
+            const link = document.createElement('a');
+            link.href = fileData;
+            link.download = fileName;
+            link.click();
+        };
+
+        window.blockUser = function(phone, event) {
+            if (event) event.stopPropagation();
+            let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
+            if (!blockedUsers.includes(phone)) {
+                blockedUsers.push(phone);
+                localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
+                alert(`تم حظر المستخدم برقم الهاتف: ${phone}`);
+                const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
+                const user = submissions.find(sub => sub.phone === phone);
+                if (user) loadUserSubmissions(user.userId);
+            } else {
+                alert(`المستخدم برقم الهاتف: ${phone} محظور بالفعل.`);
+            }
+        };
+
+        document.getElementById('close-pdf').addEventListener('click', () => {
+            document.getElementById('pdf-viewer').style.display = 'none';
+        });
+
+        document.getElementById('close-image').addEventListener('click', () => {
+            document.getElementById('image-viewer').style.display = 'none';
+        });
+
+        document.getElementById('close-video').addEventListener('click', () => {
+            document.getElementById('video-viewer').style.display = 'none';
+        });
+
+        document.getElementById('prev-page').addEventListener('click', onPrevPage);
+        document.getElementById('next-page').addEventListener('click', onNextPage);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadUsers();
+            loadBlockedUsers();
+        });
+    </script>
+</body>
+</html>
