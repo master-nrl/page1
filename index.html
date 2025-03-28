@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة الإدارة</title>
+    <title>نظام إدارة المحتوى التعليمي - لوحة التحكم</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary-color: #3498db;
@@ -31,6 +32,7 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
+            min-height: 100vh;
         }
         
         .container {
@@ -42,6 +44,7 @@
             padding: 25px;
             margin-bottom: 0;
             box-sizing: border-box;
+            margin-right: 0;
         }
         
         .content-container {
@@ -55,6 +58,25 @@
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 2px solid var(--light-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h2 i {
+            font-size: 1.2em;
+        }
+        
+        h3 {
+            color: var(--dark-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        h3 i {
+            font-size: 1em;
         }
         
         .user-list, .blocked-list {
@@ -98,6 +120,8 @@
             display: flex;
             justify-content: flex-start;
             margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         
         .btn {
@@ -108,20 +132,43 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+            border: none;
+            font-family: 'Tajawal', sans-serif;
         }
         
         .btn i {
             margin-left: 5px;
         }
         
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
         .btn-danger {
             background-color: var(--danger-color);
-            border-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
         }
         
         .btn-secondary {
             background-color: var(--dark-color);
-            border-color: var(--dark-color);
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 14px;
         }
         
         .back-btn {
@@ -254,6 +301,11 @@
             color: #fff;
         }
         
+        .submission button.chat {
+            background-color: #9b59b6;
+            color: #fff;
+        }
+        
         .block-actions {
             position: absolute;
             top: 15px;
@@ -372,6 +424,510 @@
             text-align: center;
         }
         
+        /* أنماط القائمة الجانبية */
+        .sidebar {
+            width: 250px;
+            background-color: var(--dark-color);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            top: 0;
+            right: -250px;
+            transition: var(--transition);
+            z-index: 1000;
+            padding: 20px;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+        
+        .sidebar.active {
+            right: 0;
+        }
+        
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-title {
+            font-size: 20px;
+            font-weight: 500;
+        }
+        
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+        
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+        
+        .sidebar-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-menu i {
+            margin-left: 10px;
+            font-size: 18px;
+        }
+        
+        .sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--dark-color);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+        
+        .sidebar-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        /* أنماط الإحصائيات */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-icon.users {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .stat-icon.submissions {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--secondary-color);
+        }
+        
+        .stat-icon.blocked {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .stat-icon.pending {
+            background-color: rgba(243, 156, 18, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #777;
+        }
+        
+        /* أنماط البحث والتصفية */
+        .search-filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+        
+        .filter-select {
+            min-width: 200px;
+        }
+        
+        .filter-select select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: 'Tajawal', sans-serif;
+            cursor: pointer;
+        }
+        
+        /* أنماط الجدول */
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th, .table td {
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .table th {
+            background-color: var(--dark-color);
+            color: white;
+            font-weight: 500;
+        }
+        
+        .table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .table tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        /* أنماط التنبيهات */
+        .alert {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .alert i {
+            margin-left: 10px;
+            font-size: 20px;
+        }
+        
+        .alert-success {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--secondary-color);
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .alert-danger {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .alert-warning {
+            background-color: rgba(243, 156, 18, 0.1);
+            color: var(--warning-color);
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        /* أنماط الباج */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .badge-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .badge-success {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .badge-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .badge-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .badge-secondary {
+            background-color: var(--dark-color);
+            color: white;
+        }
+        
+        /* أنماط الوضع الليلي */
+        body.night-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        
+        body.night-mode .container {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+        
+        body.night-mode .sidebar {
+            background-color: #1a1a1a;
+        }
+        
+        body.night-mode .stat-card,
+        body.night-mode .submission,
+        body.night-mode .user-card,
+        body.night-mode .blocked-card {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+            border-color: #444;
+        }
+        
+        body.night-mode .table th {
+            background-color: #333;
+        }
+        
+        body.night-mode .table tr {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+        }
+        
+        body.night-mode .table tr:nth-child(even) {
+            background-color: #252525;
+        }
+        
+        body.night-mode .table tr:hover {
+            background-color: #333;
+        }
+        
+        body.night-mode .submission p strong,
+        body.night-mode .user-card span,
+        body.night-mode .blocked-card span {
+            color: #e0e0e0;
+        }
+        
+        body.night-mode .submission p {
+            color: #b0b0b0;
+        }
+        
+        /* أنماط المحادثة */
+        .chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            max-width: 90%;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-container.active {
+            display: flex;
+        }
+        
+        .chat-header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-title {
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .message.admin {
+            align-self: flex-end;
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message.user {
+            align-self: flex-start;
+            background-color: #f1f1f1;
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message-time {
+            font-size: 10px;
+            color: #999;
+            margin-top: 3px;
+        }
+        
+        .chat-input {
+            display: flex;
+            border-top: 1px solid #eee;
+            padding: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .chat-input button {
+            margin-right: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        body.night-mode .chat-container {
+            background-color: #2d2d2d;
+        }
+        
+        body.night-mode .message.user {
+            background-color: #444;
+            color: #e0e0e0;
+        }
+        
+        body.night-mode .chat-input {
+            border-top-color: #444;
+        }
+        
+        body.night-mode .chat-input input {
+            background-color: #444;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+        
+        /* أنماط متجاوبة */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 220px;
+                right: -220px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .submissions-grid {
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+        
         @media (max-width: 768px) {
             .user-list, .blocked-list, .submissions-grid {
                 grid-template-columns: 1fr;
@@ -386,248 +942,2479 @@
                 padding: 20px 15px;
                 margin: 0;
             }
+            
+            .sidebar {
+                width: 80%;
+                right: -80%;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .search-filter-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .search-box, .filter-select {
+                width: 100%;
+            }
+            
+            .block-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .chat-container {
+                width: 90%;
+                right: 5%;
+                bottom: 10px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-responsive {
+                border-radius: 0;
+            }
+            
+            .table th, .table td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+            
+            .sidebar-toggle {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+                top: 10px;
+                right: 10px;
+            }
+            
+            .chat-messages {
+                max-height: 200px;
+            }
+        }
+        
+        /* أنماط الرسوم المتحركة */
+        @keyframes highlight {
+            0% { background-color: rgba(52, 152, 219, 0.1); }
+            50% { background-color: rgba(52, 152, 219, 0.3); }
+            100% { background-color: rgba(52, 152, 219, 0.1); }
+        }
+        
+        .highlight {
+            animation: highlight 2s ease-in-out;
+        }
+        
+        /* أنماط المودال */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        body.night-mode .modal-content {
+            background-color: #2d2d2d;
+            color: white;
+        }
+        
+        /* أنماط البطاقات */
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 15px 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        body.night-mode .card {
+            background-color: #2d2d2d;
+        }
+        
+        body.night-mode .card-header {
+            background-color: #333;
+            color: white;
+        }
+        
+        /* أنماط النموذج */
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: 'Tajawal', sans-serif;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: 'Tajawal', sans-serif;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        
+        .input-group {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .input-group .form-control {
+            margin-bottom: 0;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        
+        .input-group .btn {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+        
+        body.night-mode .form-control,
+        body.night-mode .form-select {
+            background-color: #444;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+        
+        /* أنماط التبديل */
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .form-check-input {
+            width: 50px;
+            height: 25px;
+            appearance: none;
+            background-color: #ddd;
+            border-radius: 25px;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+        }
+        
+        .form-check-input::after {
+            content: '';
+            position: absolute;
+            width: 21px;
+            height: 21px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            right: 2px;
+            transition: var(--transition);
+        }
+        
+        .form-check-input:checked::after {
+            right: calc(100% - 23px);
+        }
+        
+        body.night-mode .form-check-input {
+            background-color: #555;
+        }
+        
+        body.night-mode .form-check-input:checked {
+            background-color: var(--primary-color);
         }
     </style>
 </head>
 <body>
-    <!-- قسم المستخدمون -->
-    <div class="container" id="usersContainer">
-        <div class="content-container">
-            <h2><i class="fas fa-users"></i> المستخدمون</h2>
-            <div class="user-list" id="userList">
-                <!-- سيتم ملء المستخدمين بواسطة JavaScript -->
-            </div>
+    <!-- زر القائمة الجانبية -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- القائمة الجانبية -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">لوحة التحكم</div>
+            <button class="close-sidebar" id="closeSidebar">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
+        <ul class="sidebar-menu">
+            <li>
+                <a href="#" onclick="showDashboard()">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>لوحة التحكم</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showUsers()">
+                    <i class="fas fa-users"></i>
+                    <span>المستخدمون</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showBlockedUsers()">
+                    <i class="fas fa-ban"></i>
+                    <span>المحظورون</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showAllSubmissions()">
+                    <i class="fas fa-file-alt"></i>
+                    <span>جميع الطلبات</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showPendingSubmissions()">
+                    <i class="fas fa-hourglass-half"></i>
+                    <span>الطلبات المعلقة</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showAcceptedSubmissions()">
+                    <i class="fas fa-check-circle"></i>
+                    <span>الطلبات المقبولة</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showRejectedSubmissions()">
+                    <i class="fas fa-times-circle"></i>
+                    <span>الطلبات المرفوضة</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showActiveChats()">
+                    <i class="fas fa-comments"></i>
+                    <span>المحادثات النشطة</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showSettings()">
+                    <i class="fas fa-cog"></i>
+                    <span>الإعدادات</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="toggleNightMode()">
+                    <i class="fas fa-moon"></i>
+                    <span>الوضع الليلي</span>
+                </a>
+            </li>
+            <li>
+                <a href="index.html">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>العودة للواجهة الرئيسية</span>
+                </a>
+            </li>
+        </ul>
     </div>
 
-    <!-- قسم المستخدمون المحظورون -->
-    <div class="container" id="blockedUsersContainer">
+    <!-- لوحة التحكم -->
+    <div class="container" id="dashboardContainer">
         <div class="content-container">
-            <div class="block-controls">
-                <button class="btn btn-danger" onclick="unblockAllUsers()">
-                    <i class="fa fa-unlock"></i> فك الحظر عن الجميع
-                </button>
+            <h2><i class="fas fa-tachometer-alt"></i> لوحة التحكم</h2>
+            
+            <div class="alert alert-success">
+                <i class="fas fa-info-circle"></i>
+                <span>مرحبًا بك في لوحة إدارة المحتوى التعليمي. يمكنك من هنا إدارة جميع الطلبات والمستخدمين.</span>
             </div>
-            <h2><i class="fas fa-ban"></i> المستخدمون المحظورون</h2>
-            <div class="blocked-list" id="blockedList">
-                <!-- سيتم ملء المستخدمين المحظورين بواسطة JavaScript -->
+            
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon users">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-label">إجمالي المستخدمين</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon submissions">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-value" id="totalSubmissions">0</div>
+                    <div class="stat-label">إجمالي الطلبات</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon blocked">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <div class="stat-value" id="totalBlocked">0</div>
+                                    <div class="stat-label">المستخدمين المحظورين</div>
+            </div>
+        
+            <div class="stat-card">
+                <div class="stat-icon pending">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <div class="stat-value" id="totalPending">0</div>
+                <div class="stat-label">طلبات معلقة</div>
             </div>
         </div>
+        
+        <h3><i class="fas fa-history"></i> أحدث الطلبات</h3>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>اسم العنصر</th>
+                        <th>النوع</th>
+                        <th>المستخدم</th>
+                        <th>الفصل</th>
+                        <th>الحالة</th>
+                        <th>التاريخ</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="recentSubmissionsTable">
+                    <!-- سيتم ملء الجدول بواسطة JavaScript -->
+                </tbody>
+            </table>
+        </div>
     </div>
+</div>
 
-    <!-- قسم عرض الطلبات -->
-    <div class="container" id="submissionsContainer" style="display: none;">
-        <div class="content-container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2><i class="fas fa-file-alt"></i> طلبات المستخدم</h2>
-                <div class="back-btn" onclick="showUsers()">
-                    <i class="fas fa-arrow-right"></i>
+<!-- قسم المستخدمون -->
+<div class="container" id="usersContainer" style="display: none;">
+    <div class="content-container">
+        <h2><i class="fas fa-users"></i> المستخدمون</h2>
+        
+        <div class="search-filter-container">
+            <div class="search-box">
+                <input type="text" id="userSearch" placeholder="ابحث عن مستخدم...">
+                <i class="fas fa-search"></i>
+            </div>
+            
+            <div class="filter-select">
+                <select id="userFilter">
+                    <option value="all">جميع المستخدمين</option>
+                    <option value="withSubmissions">لديهم طلبات</option>
+                    <option value="withoutSubmissions">بدون طلبات</option>
+                </select>
+            </div>
+            
+            <button class="btn btn-danger" onclick="deleteAllUsers()">
+                <i class="fas fa-trash"></i> مسح جميع المستخدمين
+            </button>
+        </div>
+        
+        <div class="user-list" id="userList">
+            <!-- سيتم ملء المستخدمين بواسطة JavaScript -->
+        </div>
+    </div>
+</div>
+
+<!-- قسم المستخدمون المحظورون -->
+<div class="container" id="blockedUsersContainer" style="display: none;">
+    <div class="content-container">
+        <div class="block-controls">
+            <button class="btn btn-success" onclick="unblockAllUsers()">
+                <i class="fa fa-unlock"></i> فك الحظر عن الجميع
+            </button>
+            
+            <button class="btn btn-danger" onclick="deleteAllBlockedUsers()">
+                <i class="fas fa-trash"></i> مسح جميع المحظورين
+            </button>
+        </div>
+        
+        <h2><i class="fas fa-ban"></i> المستخدمون المحظورون</h2>
+        
+        <div class="blocked-list" id="blockedList">
+            <!-- سيتم ملء المستخدمين المحظورين بواسطة JavaScript -->
+        </div>
+    </div>
+</div>
+
+<!-- قسم عرض الطلبات -->
+<div class="container" id="submissionsContainer" style="display: none;">
+    <div class="content-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-file-alt"></i> طلبات المستخدم</h2>
+            <div class="back-btn" onclick="showUsers()">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+        
+        <div class="submissions-grid" id="submissionsList">
+            <!-- سيتم ملء الطلبات بواسطة JavaScript -->
+        </div>
+    </div>
+</div>
+
+<!-- قسم جميع الطلبات -->
+<div class="container" id="allSubmissionsContainer" style="display: none;">
+    <div class="content-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-file-alt"></i> جميع الطلبات</h2>
+            <div class="back-btn" onclick="showDashboard()">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+        
+        <div class="search-filter-container">
+            <div class="search-box">
+                <input type="text" id="allSubmissionsSearch" placeholder="ابحث في الطلبات...">
+                <i class="fas fa-search"></i>
+            </div>
+            
+            <div class="filter-select">
+                <select id="allSubmissionsFilter">
+                    <option value="all">جميع الطلبات</option>
+                    <option value="pending">معلقة</option>
+                    <option value="accepted">مقبولة</option>
+                    <option value="rejected">مرفوضة</option>
+                    <option value="on-hold">معلقة</option>
+                </select>
+            </div>
+            
+            <button class="btn btn-danger" onclick="deleteAllSubmissions()">
+                <i class="fas fa-trash"></i> مسح جميع الطلبات
+            </button>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>اسم العنصر</th>
+                        <th>النوع</th>
+                        <th>المستخدم</th>
+                        <th>الفصل</th>
+                        <th>الحالة</th>
+                        <th>التاريخ</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="allSubmissionsTable">
+                    <!-- سيتم ملء الجدول بواسطة JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- قسم الطلبات المعلقة -->
+<div class="container" id="pendingSubmissionsContainer" style="display: none;">
+    <div class="content-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-hourglass-half"></i> الطلبات المعلقة</h2>
+            <div class="back-btn" onclick="showDashboard()">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+        
+        <div class="search-filter-container">
+            <div class="search-box">
+                <input type="text" id="pendingSubmissionsSearch" placeholder="ابحث في الطلبات المعلقة...">
+                <i class="fas fa-search"></i>
+            </div>
+            
+            <button class="btn btn-primary" onclick="acceptAllPendingSubmissions()">
+                <i class="fas fa-check-circle"></i> قبول الكل
+            </button>
+            
+            <button class="btn btn-danger" onclick="rejectAllPendingSubmissions()">
+                <i class="fas fa-times-circle"></i> رفض الكل
+            </button>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>اسم العنصر</th>
+                        <th>النوع</th>
+                        <th>المستخدم</th>
+                        <th>الفصل</th>
+                        <th>التاريخ</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingSubmissionsTable">
+                    <!-- سيتم ملء الجدول بواسطة JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- قسم الطلبات المقبولة -->
+<div class="container" id="acceptedSubmissionsContainer" style="display: none;">
+    <div class="content-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-check-circle"></i> الطلبات المقبولة</h2>
+            <div class="back-btn" onclick="showDashboard()">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+        
+        <div class="search-filter-container">
+            <div class="search-box">
+                <input type="text" id="acceptedSubmissionsSearch" placeholder="ابحث في الطلبات المقبولة...">
+                <i class="fas fa-search"></i>
+            </div>
+            
+            <button class="btn btn-danger" onclick="deleteAllAcceptedSubmissions()">
+                <i class="fas fa-trash"></i> مسح الكل
+            </button>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>اسم العنصر</th>
+                        <th>النوع</th>
+                        <th>المستخدم</th>
+                        <th>الفصل</th>
+                        <th>التاريخ</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="acceptedSubmissionsTable">
+                    <!-- سيتم ملء الجدول بواسطة JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- قسم الطلبات المرفوضة -->
+<div class="container" id="rejectedSubmissionsContainer" style="display: none;">
+    <div class="content-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-times-circle"></i> الطلبات المرفوضة</h2>
+            <div class="back-btn" onclick="showDashboard()">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+        
+        <div class="search-filter-container">
+            <div class="search-box">
+                <input type="text" id="rejectedSubmissionsSearch" placeholder="ابحث في الطلبات المرفوضة...">
+                <i class="fas fa-search"></i>
+            </div>
+            
+            <button class="btn btn-success" onclick="restoreAllRejectedSubmissions()">
+                <i class="fas fa-undo"></i> استعادة الكل
+            </button>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>اسم العنصر</th>
+                        <th>النوع</th>
+                        <th>المستخدم</th>
+                        <th>الفصل</th>
+                        <th>التاريخ</th>
+                        <th>سبب الرفض</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="rejectedSubmissionsTable">
+                    <!-- سيتم ملء الجدول بواسطة JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- قسم المحادثات النشطة -->
+<div class="container" id="activeChatsContainer" style="display: none;">
+    <div class="content-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-comments"></i> المحادثات النشطة</h2>
+            <div class="back-btn" onclick="showDashboard()">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+        
+        <div class="search-filter-container">
+            <div class="search-box">
+                <input type="text" id="chatsSearch" placeholder="ابحث في المحادثات...">
+                <i class="fas fa-search"></i>
+            </div>
+            
+            <button class="btn btn-danger" onclick="closeAllChats()">
+                <i class="fas fa-times-circle"></i> إغلاق جميع المحادثات
+            </button>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>المستخدم</th>
+                        <th>رقم الهاتف</th>
+                        <th>آخر رسالة</th>
+                        <th>التاريخ</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="activeChatsTable">
+                    <!-- سيتم ملء الجدول بواسطة JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- قسم الإعدادات -->
+<div class="container" id="settingsContainer" style="display: none;">
+    <div class="content-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-cog"></i> الإعدادات</h2>
+            <div class="back-btn" onclick="showDashboard()">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <i class="fas fa-database"></i> إدارة البيانات
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <button class="btn btn-primary w-100" onclick="exportData()">
+                            <i class="fas fa-file-export"></i> تصدير البيانات
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <button class="btn btn-secondary w-100" onclick="importData()">
+                            <i class="fas fa-file-import"></i> استيراد البيانات
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <button class="btn btn-success w-100" onclick="backupData()">
+                            <i class="fas fa-save"></i> إنشاء نسخة احتياطية
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <button class="btn btn-danger w-100" onclick="resetSystem()">
+                            <i class="fas fa-trash"></i> إعادة ضبط النظام
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="submissions-grid" id="submissionsList">
-                <!-- سيتم ملء الطلبات بواسطة JavaScript -->
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <i class="fas fa-user-shield"></i> إعدادات الأمان
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">كلمة مرور الأدمن</label>
+                    <div class="input-group">
+                        <input type="password" id="adminPassword" class="form-control" placeholder="أدخل كلمة مرور جديدة">
+                        <button class="btn btn-primary" onclick="changeAdminPassword()">
+                            <i class="fas fa-key"></i> تغيير
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">الوضع الليلي</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="nightModeSwitch" onchange="toggleNightMode()">
+                        <label class="form-check-label" for="nightModeSwitch">تفعيل الوضع الليلي</label>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">عدد العناصر المعروضة</label>
+                    <select class="form-select" id="itemsPerPage">
+                        <option value="10">10 عناصر</option>
+                        <option value="25">25 عنصرًا</option>
+                        <option value="50">50 عنصرًا</option>
+                        <option value="100">100 عنصر</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <i class="fas fa-info-circle"></i> معلومات النظام
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>إصدار النظام:</strong> 1.0.0</p>
+                        <p><strong>تاريخ التحديث الأخير:</strong> <span id="lastUpdateDate"></span></p>
+                        <p><strong>عدد المستخدمين:</strong> <span id="systemUsersCount">0</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>عدد الطلبات:</strong> <span id="systemSubmissionsCount">0</span></p>
+                        <p><strong>الطلبات المعلقة:</strong> <span id="systemPendingCount">0</span></p>
+                        <p><strong>المستخدمين المحظورين:</strong> <span id="systemBlockedCount">0</span></p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div id="pdf-viewer">
-        <canvas id="pdf-canvas"></canvas>
-        <div id="pdf-controls">
-            <button id="prev-page" title="السابق"><i class="fas fa-arrow-right"></i></button>
-            <span id="page-count">0/0</span>
-            <button id="next-page" title="التالي"><i class="fas fa-arrow-left"></i></button>
-            <button id="close-pdf" class="close" title="إغلاق"><i class="fas fa-times"></i></button>
+<!-- عارض PDF -->
+<div id="pdf-viewer">
+    <canvas id="pdf-canvas"></canvas>
+    <div id="pdf-controls">
+        <button id="prev-page" title="السابق"><i class="fas fa-arrow-right"></i></button>
+        <span id="page-count">0/0</span>
+        <button id="next-page" title="التالي"><i class="fas fa-arrow-left"></i></button>
+        <button id="close-pdf" class="close" title="إغلاق"><i class="fas fa-times"></i></button>
+    </div>
+</div>
+
+<!-- عارض الصور -->
+<div id="image-viewer">
+    <img id="image-display" src="" alt="Image Preview">
+    <div id="image-controls">
+        <button id="close-image" class="close" title="إغلاق"><i class="fas fa-times"></i></button>
+    </div>
+</div>
+
+<!-- عارض الفيديو -->
+<div id="video-viewer">
+    <video id="video-display" controls></video>
+    <div id="video-controls">
+        <button id="close-video" class="close" title="إغلاق"><i class="fas fa-times"></i></button>
+    </div>
+</div>
+
+<!-- نافذة المحادثة -->
+<div class="chat-container" id="chatContainer">
+    <div class="chat-header">
+        <div class="chat-title" id="chatTitle">محادثة مع المستخدم</div>
+        <button class="chat-close" id="closeChat"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+        <!-- سيتم ملء الرسائل هنا -->
+    </div>
+    <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="اكتب رسالتك هنا...">
+        <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<!-- مدخل كلمة المرور -->
+<div id="passwordModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 400px;">
+        <h3><i class="fas fa-lock"></i> مصادقة الأدمن</h3>
+        <div class="mb-3">
+            <label for="inputPassword" class="form-label">كلمة مرور الأدمن</label>
+            <input type="password" class="form-control" id="inputPassword" placeholder="أدخل كلمة المرور">
+        </div>
+        <div class="d-flex justify-content-end gap-2">
+            <button class="btn btn-secondary" onclick="document.getElementById('passwordModal').style.display = 'none'">إلغاء</button>
+            <button class="btn btn-primary" onclick="verifyAdminPassword()">تأكيد</button>
         </div>
     </div>
+</div>
 
-    <div id="image-viewer">
-        <img id="image-display" src="" alt="Image Preview">
-        <div id="image-controls">
-            <button id="close-image" class="close" title="إغلاق"><i class="fas fa-times"></i></button>
-        </div>
-    </div>
-
-    <div id="video-viewer">
-        <video id="video-display" controls></video>
-        <div id="video-controls">
-            <button id="close-video" class="close" title="إغلاق"><i class="fas fa-times"></i></button>
-        </div>
-    </div>
-
-    <script>
-        // متغيرات PDF
-        let pdfDoc = null,
-            pageNum = 1,
-            pageRendering = false,
-            pageNumPending = null,
-            scale = 1.5;
+<script>
+    // متغيرات النظام
+    let currentAction = null;
+    let currentUserId = null;
+    let currentSubmissionId = null;
+    let currentChatUserId = null;
+    let pdfDoc = null;
+    let pageNum = 1;
+    let pageRendering = false;
+    let pageNumPending = null;
+    let scale = 1.5;
+    const API_BASE_URL = 'https://master-nrl.github.io/page1/api';
+    
+    // تهيئة النظام عند التحميل
+    document.addEventListener("DOMContentLoaded", () => {
+        checkAdminPassword();
+        loadStats();
+        loadRecentSubmissions();
+        setupEventListeners();
         
-        function showUsers() {
-            document.getElementById('usersContainer').style.display = 'block';
-            document.getElementById('blockedUsersContainer').style.display = 'block';
-            document.getElementById('submissionsContainer').style.display = 'none';
+        // تحميل إعدادات الوضع الليلي
+        if (localStorage.getItem('nightMode') === 'enabled') {
+            document.body.classList.add('night-mode');
+            document.getElementById('nightModeSwitch').checked = true;
         }
-
-        function loadUsers() {
-            const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
-            const users = [...new Set(submissions.map(sub => sub.userId))];
-            const userList = document.getElementById("userList");
-            userList.innerHTML = users.map(userId => `
-                <div class="user-card" onclick="loadUserSubmissions('${userId}')">
-                    <span><i class="fas fa-user"></i> المستخدم ${userId}</span>
+        
+        // تحميل عدد العناصر لكل صفحة
+        const itemsPerPage = localStorage.getItem('itemsPerPage') || '10';
+        document.getElementById('itemsPerPage').value = itemsPerPage;
+        
+        // تحديث تاريخ التحديث الأخير
+        document.getElementById('lastUpdateDate').textContent = new Date().toLocaleDateString('ar-EG');
+        
+        // تهيئة المحادثة
+        setupChat();
+    });
+    
+    // إعداد مستمعات الأحداث
+    function setupEventListeners() {
+        // القائمة الجانبية
+        document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+        document.getElementById('closeSidebar').addEventListener('click', toggleSidebar);
+        
+        // البحث والتصفية
+        document.getElementById('userSearch').addEventListener('input', filterUsers);
+        document.getElementById('userFilter').addEventListener('change', filterUsers);
+        document.getElementById('allSubmissionsSearch').addEventListener('input', filterAllSubmissions);
+        document.getElementById('allSubmissionsFilter').addEventListener('change', filterAllSubmissions);
+        document.getElementById('pendingSubmissionsSearch').addEventListener('input', filterPendingSubmissions);
+        document.getElementById('acceptedSubmissionsSearch').addEventListener('input', filterAcceptedSubmissions);
+        document.getElementById('rejectedSubmissionsSearch').addEventListener('input', filterRejectedSubmissions);
+        document.getElementById('chatsSearch').addEventListener('input', filterChats);
+        
+        // عارض PDF
+        document.getElementById('close-pdf').addEventListener('click', () => {
+            document.getElementById('pdf-viewer').style.display = 'none';
+        });
+        
+        document.getElementById('close-image').addEventListener('click', () => {
+            document.getElementById('image-viewer').style.display = 'none';
+        });
+        
+        document.getElementById('close-video').addEventListener('click', () => {
+            document.getElementById('video-viewer').style.display = 'none';
+        });
+        
+        document.getElementById('prev-page').addEventListener('click', onPrevPage);
+        document.getElementById('next-page').addEventListener('click', onNextPage);
+        
+        // العناصر لكل صفحة
+        document.getElementById('itemsPerPage').addEventListener('change', updateItemsPerPage);
+        
+        // المحادثة
+        document.getElementById('closeChat').addEventListener('click', closeChat);
+        document.getElementById('sendMessage').addEventListener('click', sendMessage);
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    }
+    
+    // تهيئة نظام المحادثة
+    function setupChat() {
+        // لا يوجد حاجة لتهيئة إضافية هنا
+    }
+    
+    // التحقق من كلمة مرور الأدمن
+    function checkAdminPassword() {
+        if (!localStorage.getItem('adminPassword')) {
+            localStorage.setItem('adminPassword', 'admin123'); // كلمة مرور افتراضية
+        }
+    }
+    
+    // عرض نافذة كلمة المرور
+    function showPasswordModal(action, userId = null, submissionId = null) {
+        currentAction = action;
+        currentUserId = userId;
+        currentSubmissionId = submissionId;
+        document.getElementById('passwordModal').style.display = 'flex';
+        document.getElementById('inputPassword').focus();
+    }
+    
+    // التحقق من كلمة المرور
+    function verifyAdminPassword() {
+        const inputPassword = document.getElementById('inputPassword').value;
+        const adminPassword = localStorage.getItem('adminPassword');
+        
+        if (inputPassword === adminPassword) {
+            document.getElementById('passwordModal').style.display = 'none';
+            document.getElementById('inputPassword').value = '';
+            
+            // تنفيذ الإجراء المطلوب بعد المصادقة
+            switch(currentAction) {
+                case 'deleteAllUsers':
+                    deleteAllUsersConfirmed();
+                    break;
+                case 'deleteAllBlockedUsers':
+                    deleteAllBlockedUsersConfirmed();
+                    break;
+                case 'deleteAllSubmissions':
+                    deleteAllSubmissionsConfirmed();
+                    break;
+                case 'deleteAllPendingSubmissions':
+                    deleteAllPendingSubmissionsConfirmed();
+                    break;
+                case 'deleteAllAcceptedSubmissions':
+                    deleteAllAcceptedSubmissionsConfirmed();
+                    break;
+                case 'deleteAllRejectedSubmissions':
+                    deleteAllRejectedSubmissionsConfirmed();
+                    break;
+                case 'acceptAllPendingSubmissions':
+                    acceptAllPendingSubmissionsConfirmed();
+                    break;
+                case 'rejectAllPendingSubmissions':
+                    rejectAllPendingSubmissionsConfirmed();
+                    break;
+                case 'restoreAllRejectedSubmissions':
+                    restoreAllRejectedSubmissionsConfirmed();
+                    break;
+                case 'closeAllChats':
+                    closeAllChatsConfirmed();
+                    break;
+                case 'resetSystem':
+                    resetSystemConfirmed();
+                    break;
+                case 'changeAdminPassword':
+                    changeAdminPasswordConfirmed();
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'خطأ',
+                text: 'كلمة المرور غير صحيحة!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    }
+    
+    // تغيير كلمة مرور الأدمن
+    function changeAdminPassword() {
+        showPasswordModal('changeAdminPassword');
+    }
+    
+    function changeAdminPasswordConfirmed() {
+        const newPassword = prompt('أدخل كلمة المرور الجديدة:');
+        if (newPassword && newPassword.length >= 6) {
+            localStorage.setItem('adminPassword', newPassword);
+            Swal.fire({
+                icon: 'success',
+                title: 'تم التغيير',
+                text: 'تم تغيير كلمة مرور الأدمن بنجاح.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'خطأ',
+                text: 'كلمة المرور يجب أن تتكون من 6 أحرف على الأقل.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    }
+    
+    // تبديل القائمة الجانبية
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+    }
+    
+    // تبديل الوضع الليلي
+    function toggleNightMode() {
+        document.body.classList.toggle('night-mode');
+        const isNightMode = document.body.classList.contains('night-mode');
+        localStorage.setItem('nightMode', isNightMode ? 'enabled' : 'disabled');
+        document.getElementById('nightModeSwitch').checked = isNightMode;
+    }
+    
+    // تحديث عدد العناصر المعروضة
+    function updateItemsPerPage() {
+        const itemsPerPage = document.getElementById('itemsPerPage').value;
+        localStorage.setItem('itemsPerPage', itemsPerPage);
+        // إعادة تحميل البيانات حسب الصفحة الحالية
+        if (document.getElementById('allSubmissionsContainer').style.display !== 'none') {
+            loadAllSubmissions();
+        } else if (document.getElementById('pendingSubmissionsContainer').style.display !== 'none') {
+            loadPendingSubmissions();
+        } else if (document.getElementById('acceptedSubmissionsContainer').style.display !== 'none') {
+            loadAcceptedSubmissions();
+        } else if (document.getElementById('rejectedSubmissionsContainer').style.display !== 'none') {
+            loadRejectedSubmissions();
+        } else if (document.getElementById('activeChatsContainer').style.display !== 'none') {
+            loadActiveChats();
+        }
+    }
+    
+    // تحميل الإحصائيات
+    async function loadStats() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/stats`);
+            const data = await response.json();
+            
+            document.getElementById('totalUsers').textContent = data.totalUsers;
+            document.getElementById('totalSubmissions').textContent = data.totalSubmissions;
+            document.getElementById('totalBlocked').textContent = data.totalBlocked;
+            document.getElementById('totalPending').textContent = data.totalPending;
+            
+            // تحديث إحصائيات النظام
+            document.getElementById('systemUsersCount').textContent = data.totalUsers;
+            document.getElementById('systemSubmissionsCount').textContent = data.totalSubmissions;
+            document.getElementById('systemPendingCount').textContent = data.totalPending;
+            document.getElementById('systemBlockedCount').textContent = data.totalBlocked;
+        } catch (error) {
+            console.error('Error loading stats:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'خطأ',
+                text: 'حدث خطأ أثناء تحميل الإحصائيات',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    }
+    
+    // تحميل أحدث الطلبات
+    async function loadRecentSubmissions() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/submissions/recent`);
+            const submissions = await response.json();
+            const tableBody = document.getElementById('recentSubmissionsTable');
+            
+            tableBody.innerHTML = submissions.map((sub, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${sub.name}</td>
+                    <td>${sub.type}</td>
+                    <td>${sub.userId}</td>
+                    <td>${sub.semester}</td>
+                    <td><span class="badge ${getStatusBadgeClass(sub.status)}">${sub.status}</span></td>
+                    <td>${new Date(sub.timestamp).toLocaleString('ar-EG')}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="viewSubmission('${sub.userId}', '${sub.timestamp}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading recent submissions:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'خطأ',
+                text: 'حدث خطأ أثناء تحميل أحدث الطلبات',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    }
+    
+    // الحصول على كلاس حالة الطلب
+    function getStatusBadgeClass(status) {
+        switch(status) {
+            case 'مقبول': return 'badge-success';
+            case 'مرفوض': return 'badge-danger';
+            case 'في انتظار المراجعة': return 'badge-warning';
+            case 'معلق': return 'badge-secondary';
+            default: return 'badge-primary';
+        }
+    }
+    
+    // عرض لوحة التحكم
+    function showDashboard() {
+        hideAllContainers();
+        document.getElementById('dashboardContainer').style.display = 'block';
+        loadStats();
+        loadRecentSubmissions();
+    }
+    
+    // عرض المستخدمين
+    function showUsers() {
+        hideAllContainers();
+        document.getElementById('usersContainer').style.display = 'block';
+        loadUsers();
+    }
+    
+    // عرض المستخدمين المحظورين
+    function showBlockedUsers() {
+        hideAllContainers();
+        document.getElementById('blockedUsersContainer').style.display = 'block';
+        loadBlockedUsers();
+    }
+    
+    // عرض جميع الطلبات
+    function showAllSubmissions() {
+        hideAllContainers();
+        document.getElementById('allSubmissionsContainer').style.display = 'block';
+        loadAllSubmissions();
+    }
+    
+    // عرض الطلبات المعلقة
+    function showPendingSubmissions() {
+        hideAllContainers();
+        document.getElementById('pendingSubmissionsContainer').style.display = 'block';
+        loadPendingSubmissions();
+    }
+    
+    // عرض الطلبات المقبولة
+    function showAcceptedSubmissions() {
+        hideAllContainers();
+        document.getElementById('acceptedSubmissionsContainer').style.display = 'block';
+        loadAcceptedSubmissions();
+    }
+    
+    // عرض الطلبات المرفوضة
+    function showRejectedSubmissions() {
+        hideAllContainers();
+        document.getElementById('rejectedSubmissionsContainer').style.display = 'block';
+        loadRejectedSubmissions();
+    }
+    
+    // عرض المحادثات النشطة
+    function showActiveChats() {
+        hideAllContainers();
+        document.getElementById('activeChatsContainer').style.display = 'block';
+        loadActiveChats();
+    }
+    
+    // عرض الإعدادات
+    function showSettings() {
+        hideAllContainers();
+        document.getElementById('settingsContainer').style.display = 'block';
+    }
+    
+    // إخفاء جميع الحاويات
+    function hideAllContainers() {
+        const containers = [
+            'dashboardContainer',
+            'usersContainer',
+            'blockedUsersContainer',
+            'submissionsContainer',
+            'allSubmissionsContainer',
+            'pendingSubmissionsContainer',
+            'acceptedSubmissionsContainer',
+            'rejectedSubmissionsContainer',
+            'activeChatsContainer',
+            'settingsContainer'
+        ];
+        
+        containers.forEach(id => {
+            document.getElementById(id).style.display = 'none';
+        });
+    }
+    
+    // تحميل المستخدمين
+    async function loadUsers() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/users`);
+            const users = await response.json();
+            const userList = document.getElementById('userList');
+            
+            userList.innerHTML = users.map(user => `
+                <div class="user-card" onclick="loadUserSubmissions('${user.id}')">
+                    <div>
+                        <span><i class="fas fa-user"></i> المستخدم ${user.id}</span>
+                        <small class="d-block text-muted">${user.phone}</small>
+                    </div>
                     <i class="fas fa-angle-left"></i>
                 </div>
-            `).join("");
+            `).join('');
+        } catch (error) {
+            console.error('Error loading users:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'خطأ',
+                text: 'حدث خطأ أثناء تحميل المستخدمين',
+                timer: 2000,
+                showConfirmButton: false
+            });
         }
-
-        function loadBlockedUsers() {
-            const blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
-            const blockedList = document.getElementById("blockedList");
-            blockedList.innerHTML = blockedUsers.map(phone => `
+    }
+    
+    // تصفية المستخدمين
+    function filterUsers() {
+        const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+        const filterType = document.getElementById('userFilter').value;
+        const userCards = document.querySelectorAll('.user-card');
+        
+        userCards.forEach(card => {
+            const userId = card.querySelector('span').textContent.toLowerCase();
+            const phone = card.querySelector('small').textContent.toLowerCase();
+            const hasSubmissions = true; // يمكن تعديله حسب البيانات الفعلية
+            
+            const shouldShow = 
+                (filterType === 'all' || 
+                 (filterType === 'withSubmissions' && hasSubmissions) || 
+                 (filterType === 'withoutSubmissions' && !hasSubmissions)) &&
+                (userId.includes(searchTerm) || phone.includes(searchTerm));
+            
+            card.style.display = shouldShow ? 'flex' : 'none';
+        });
+    }
+    
+    // تحميل المستخدمين المحظورين
+    async function loadBlockedUsers() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/blocked-users`);
+            const blockedUsers = await response.json();
+            const blockedList = document.getElementById('blockedList');
+            
+            blockedList.innerHTML = blockedUsers.map(user => `
                 <div class="blocked-card">
-                    <span><i class="fas fa-phone"></i> ${phone}</span>
-                    <i class="fa fa-unlock" onclick="unblockUser('${phone}', event)"></i>
+                    <span><i class="fas fa-phone"></i> ${user.phone}</span>
+                    <div>
+                        <button class="btn btn-sm btn-success me-2" onclick="unblockUser('${user.phone}', event)">
+                            <i class="fa fa-unlock"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteBlockedUser('${user.phone}', event)">
+                        	                    </button>
                 </div>
-            `).join("");
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading blocked users:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء تحميل المستخدمين المحظورين',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// تحميل طلبات المستخدم
+async function loadUserSubmissions(userId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/submissions/user/${userId}`);
+        const submissions = await response.json();
+        const submissionsList = document.getElementById('submissionsList');
+        
+        submissionsList.innerHTML = submissions.map(submission => {
+            return `
+            <div class="submission ${submission.status === 'في انتظار المراجعة' ? 'pending' : 
+                submission.status === 'مقبول' ? 'accepted' : 
+                submission.status === 'معلق' ? 'on-hold' : 'rejected'}">
+                
+                <div class="block-actions">
+                    ${submission.isBlocked ? `
+                    <button class="unblock-btn" onclick="unblockUser('${submission.phone}', event)">
+                        <i class="fas fa-unlock"></i>
+                    </button>
+                    ` : `
+                    <button class="block-btn" onclick="blockUser('${submission.phone}', event)">
+                        <i class="fas fa-ban"></i>
+                    </button>
+                    `}
+                </div>
+                
+                <div class="submission-header">
+                    <span class="status-badge">${submission.status}</span>
+                    <small class="text-muted">${new Date(submission.timestamp).toLocaleString('ar-EG')}</small>
+                </div>
+                
+                <p>
+                    <i class="fas fa-user-tag"></i>
+                    <strong>اسم العنصر:</strong>
+                    <span>${submission.name}</span>
+                </p>
+                
+                <p>
+                    <i class="fas fa-tag"></i>
+                    <strong>النوع:</strong>
+                    <span>${submission.type}</span>
+                </p>
+                
+                <p>
+                    <i class="fas fa-align-left"></i>
+                    <strong>الوصف:</strong>
+                    <span>${submission.description}</span>
+                </p>
+                
+                <p>
+                    <i class="fas fa-phone"></i>
+                    <strong>رقم الهاتف:</strong>
+                    <span>${submission.phone}</span>
+                </p>
+                
+                <p>
+                    <i class="fas fa-graduation-cap"></i>
+                    <strong>الفصل:</strong>
+                    <span>${submission.semester}</span>
+                </p>
+                
+                <p>
+                    <i class="fas fa-file"></i>
+                    <strong>الملف:</strong>
+                    <span>${submission.fileName || "لا يوجد ملف"}</span>
+                </p>
+
+                <p>
+                    <i class="fa-solid fa-image"></i>
+                    <strong>غلاف الصورة:</strong>
+                    <span>${submission.coverImageName || "لا يوجد غلاف"}</span>
+                </p>
+                
+                <div class="submission-actions">
+                    <button class="accept" onclick="acceptSubmission('${submission.userId}', '${submission.timestamp}')">
+                        <i class="fas fa-check"></i> قبول
+                    </button>
+                    <button class="reject" onclick="rejectSubmission('${submission.userId}', '${submission.timestamp}')">
+                        <i class="fas fa-times"></i> رفض
+                    </button>
+                    <button class="hold" onclick="holdSubmission('${submission.userId}', '${submission.timestamp}')">
+                        <i class="fas fa-pause"></i> تعليق
+                    </button>
+                    <button class="delete" onclick="deleteSubmission('${submission.userId}', '${submission.timestamp}')">
+                        <i class="fas fa-trash"></i> مسح
+                    </button>
+                    ${submission.fileName ? `
+                    <button class="preview" onclick="previewFile('${submission.fileName}', '${submission.fileData}')">
+                        <i class="fas fa-eye"></i> معاينة
+                    </button>
+                    <button class="download" onclick="downloadFile('${submission.fileName}', '${submission.fileData}')">
+                        <i class="fas fa-download"></i> تحميل
+                    </button>
+                    ` : ''}
+                    ${submission.coverImageName ? `
+                    <button class="preview" onclick="previewImage('${submission.coverImageName}', '${submission.coverImageData}')">
+                        <i class="fas fa-eye"></i> معاينة الغلاف
+                    </button>
+                    ` : ''}
+                    <button class="chat" onclick="startChat('${submission.userId}', '${submission.phone}')">
+                        <i class="fas fa-comment"></i> محادثة
+                    </button>
+                </div>
+            </div>
+            `;
+        }).join('');
+        
+        document.getElementById('usersContainer').style.display = 'none';
+        document.getElementById('blockedUsersContainer').style.display = 'none';
+        document.getElementById('submissionsContainer').style.display = 'block';
+    } catch (error) {
+        console.error('Error loading user submissions:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء تحميل طلبات المستخدم',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// بدء محادثة جديدة
+async function startChat(userId, phone) {
+    try {
+        currentChatUserId = userId;
+        document.getElementById('chatTitle').textContent = `محادثة مع ${phone}`;
+        document.getElementById('chatContainer').classList.add('active');
+        
+        // تحميل الرسائل السابقة
+        await loadChatMessages(userId);
+        
+        // تحديث حالة المحادثة إذا كانت جديدة
+        const response = await fetch(`${API_BASE_URL}/chats/check/${userId}`);
+        const chatExists = await response.json();
+        
+        if (!chatExists) {
+            await fetch(`${API_BASE_URL}/chats/start`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    phone: phone,
+                    lastMessage: 'بدء المحادثة',
+                    status: 'نشطة'
+                })
+            });
+        }
+        
+        // تحديث قائمة المحادثات النشطة إذا كانت مفتوحة
+        if (document.getElementById('activeChatsContainer').style.display !== 'none') {
+            loadActiveChats();
+        }
+    } catch (error) {
+        console.error('Error starting chat:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء بدء المحادثة',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// تحميل رسائل المحادثة
+async function loadChatMessages(userId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/chats/messages/${userId}`);
+        const messages = await response.json();
+        const chatMessages = document.getElementById('chatMessages');
+        
+        chatMessages.innerHTML = messages.map(msg => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${msg.sender === 'admin' ? 'admin' : 'user'}`;
+            messageDiv.innerHTML = `
+                ${msg.text}
+                <br>
+                <span class="message-time">${new Date(msg.timestamp).toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})}</span>
+            `;
+            return messageDiv.outerHTML;
+        }).join('');
+        
+        // التمرير إلى أحدث رسالة
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    } catch (error) {
+        console.error('Error loading chat messages:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء تحميل الرسائل',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// إرسال رسالة
+async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const messageText = input.value.trim();
+    
+    if (messageText && currentChatUserId) {
+        try {
+            // حفظ الرسالة
+            await fetch(`${API_BASE_URL}/chats/send`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: currentChatUserId,
+                    sender: 'admin',
+                    text: messageText
+                })
+            });
+            
+            // تحديث آخر رسالة في المحادثات النشطة
+            await fetch(`${API_BASE_URL}/chats/update-last-message`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: currentChatUserId,
+                    lastMessage: messageText
+                })
+            });
+            
+            // تحديث العرض
+            await loadChatMessages(currentChatUserId);
+            input.value = '';
+            
+            // تحديث قائمة المحادثات النشطة إذا كان�� مفتوحة
+            if (document.getElementById('activeChatsContainer').style.display !== 'none') {
+                loadActiveChats();
+            }
+        } catch (error) {
+            console.error('Error sending message:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'خطأ',
+                text: 'حدث خطأ أثناء إرسال الرسالة',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    }
+}
+
+// إغلاق المحادثة
+async function closeChat() {
+    try {
+        if (currentChatUserId) {
+            // حذف جميع رسائل المحادثة
+            await fetch(`${API_BASE_URL}/chats/delete-messages/${currentChatUserId}`, {
+                method: 'DELETE'
+            });
+            
+            // إغلاق المحادثة
+            await fetch(`${API_BASE_URL}/chats/close/${currentChatUserId}`, {
+                method: 'DELETE'
+            });
+            
+            currentChatUserId = null;
+            document.getElementById('chatContainer').classList.remove('active');
+            document.getElementById('chatMessages').innerHTML = '';
+            
+            // تحديث قائمة المحادثات النشطة إذا كانت مفتوحة
+            if (document.getElementById('activeChatsContainer').style.display !== 'none') {
+                loadActiveChats();
+            }
+        }
+    } catch (error) {
+        console.error('Error closing chat:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء إغلاق المحادثة',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// تحميل المحادثات النشطة
+async function loadActiveChats() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/chats/active`);
+        const activeChats = await response.json();
+        const tableBody = document.getElementById('activeChatsTable');
+        
+        tableBody.innerHTML = activeChats.map((chat, index) => `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${chat.userId}</td>
+                <td>${chat.phone}</td>
+                <td>${chat.lastMessage.length > 30 ? chat.lastMessage.substring(0, 30) + '...' : chat.lastMessage}</td>
+                <td>${new Date(chat.timestamp).toLocaleString('ar-EG')}</td>
+                <td><span class="badge badge-success">${chat.status}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-primary me-2" onclick="startChat('${chat.userId}', '${chat.phone}')">
+                        <i class="fas fa-comment"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="closeSingleChat('${chat.userId}', event)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading active chats:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء تحميل المحادثات النشطة',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// تصفية المحادثات
+function filterChats() {
+    const searchTerm = document.getElementById('chatsSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('#activeChatsTable tr');
+    
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length === 0) return;
+        
+        const userId = cells[1].textContent.toLowerCase();
+        const phone = cells[2].textContent.toLowerCase();
+        const message = cells[3].textContent.toLowerCase();
+        
+        const matchesSearch = userId.includes(searchTerm) || 
+                            phone.includes(searchTerm) || 
+                            message.includes(searchTerm);
+        
+        row.style.display = matchesSearch ? '' : 'none';
+    });
+}
+
+// إغلاق محادثة واحدة
+async function closeSingleChat(userId, event) {
+    if (event) event.stopPropagation();
+    
+    try {
+        const result = await Swal.fire({
+            title: 'إغلاق المحادثة',
+            text: 'هل أنت متأكد من إغلاق هذه المحادثة؟',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'نعم، أغلق',
+            cancelButtonText: 'إلغاء'
+        });
+
+        if (result.isConfirmed) {
+            // حذف جميع رسائل المحادثة
+            await fetch(`${API_BASE_URL}/chats/delete-messages/${userId}`, {
+                method: 'DELETE'
+            });
+            
+            // إغلاق المحادثة
+            await fetch(`${API_BASE_URL}/chats/close/${userId}`, {
+                method: 'DELETE'
+            });
+            
+            // إذا كانت المحادثة المغلقة مفتوحة حالياً، أغلقها
+            if (currentChatUserId === userId) {
+                closeChat();
+            }
+            
+            // إعادة تحميل قائمة المحادثات
+            loadActiveChats();
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'تم الإغلاق',
+                text: 'تم إغلاق المحادثة بنجاح',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    } catch (error) {
+        console.error('Error closing single chat:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء إغلاق المحادثة',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// إغلاق جميع المحادثات
+function closeAllChats() {
+    showPasswordModal('closeAllChats');
+}
+
+async function closeAllChatsConfirmed() {
+    try {
+        await fetch(`${API_BASE_URL}/chats/close-all`, {
+            method: 'DELETE'
+        });
+        
+        closeChat();
+        loadActiveChats();
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'تم الإغلاق',
+            text: 'تم إغلاق جميع المحادثات بنجاح',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Error closing all chats:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء إغلاق جميع المحادثات',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// حظر مستخدم
+async function blockUser(phone, event) {
+    if (event) event.stopPropagation();
+    
+    try {
+        const result = await Swal.fire({
+            title: 'حظر المستخدم',
+            text: `هل تريد حظر المستخدم برقم الهاتف ${phone}؟`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'نعم، احظره',
+            cancelButtonText: 'إلغاء'
+        });
+
+        if (result.isConfirmed) {
+            await fetch(`${API_BASE_URL}/blocked-users/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phone })
+            });
+            
+            // إعادة تحميل البيانات
+            loadBlockedUsers();
+            
+            // البحث عن المستخدم في الطلبات وتحديث العرض
+            const response = await fetch(`${API_BASE_URL}/submissions/by-phone/${phone}`);
+            const user = await response.json();
+            if (user) loadUserSubmissions(user.userId);
+            
+            // إظهار تنبيه بنجاح العملية
+            Swal.fire({
+                icon: 'success',
+                title: 'تم الحظر',
+                text: `تم حظر المستخدم برقم الهاتف ${phone}`,
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    } catch (error) {
+        console.error('Error blocking user:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء حظر المستخدم',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// فك حظر مستخدم
+async function unblockUser(phone, event) {
+    if (event) event.stopPropagation();
+    
+    try {
+        const result = await Swal.fire({
+            title: 'فك الحظر',
+            text: `هل تريد فك حظر المستخدم برقم الهاتف ${phone}؟`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'نعم، فك الحظر',
+            cancelButtonText: 'إلغاء'
+        });
+
+        if (result.isConfirmed) {
+            await fetch(`${API_BASE_URL}/blocked-users/remove/${phone}`, {
+                method: 'DELETE'
+            });
+            
+            // إعادة تحميل البيانات
+            loadBlockedUsers();
+            
+            // البحث عن المستخدم في الطلبات وتحديث العرض
+            const response = await fetch(`${API_BASE_URL}/submissions/by-phone/${phone}`);
+            const user = await response.json();
+            if (user) loadUserSubmissions(user.userId);
+            
+            // إظهار تنبيه بنجاح العملية
+            Swal.fire({
+                icon: 'success',
+                title: 'تم فك الحظر',
+                text: `تم فك حظر المستخدم برقم الهاتف ${phone}`,
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    } catch (error) {
+        console.error('Error unblocking user:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء فك حظر المستخدم',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// حذف مستخدم محظور
+async function deleteBlockedUser(phone, event) {
+    if (event) event.stopPropagation();
+    
+    try {
+        const result = await Swal.fire({
+            title: 'حذف المستخدم المحظور',
+            text: `هل تريد حذف المستخدم برقم الهاتف ${phone} من قائمة المحظورين؟`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'نعم، احذفه',
+            cancelButtonText: 'إلغاء'
+        });
+
+        if (result.isConfirmed) {
+            await fetch(`${API_BASE_URL}/blocked-users/delete/${phone}`, {
+                method: 'DELETE'
+            });
+            
+            // إعادة تحميل البيانات
+            loadBlockedUsers();
+            
+            // إظهار تنبيه بنجاح العملية
+            Swal.fire({
+                icon: 'success',
+                title: 'تم الحذف',
+                text: `تم حذف المستخدم برقم الهاتف ${phone} من قائمة المحظورين`,
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    } catch (error) {
+        console.error('Error deleting blocked user:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء حذف المستخدم المحظور',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// فك حظر جميع المستخدمين
+function unblockAllUsers() {
+    showPasswordModal('unblockAllUsers');
+}
+
+async function unblockAllUsersConfirmed() {
+    try {
+        await fetch(`${API_BASE_URL}/blocked-users/clear`, {
+            method: 'DELETE'
+        });
+        
+        // إعادة تحميل البيانات
+        loadBlockedUsers();
+        loadStats();
+        
+        // إظهار تنبيه بنجاح العملية
+        Swal.fire({
+            icon: 'success',
+            title: 'تم فك الحظر',
+            text: 'تم فك حظر جميع المستخدمين بنجاح',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Error unblocking all users:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء فك حظر جميع المستخدمين',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// حذف جميع المستخدمين
+function deleteAllUsers() {
+    showPasswordModal('deleteAllUsers');
+}
+
+async function deleteAllUsersConfirmed() {
+    try {
+        await fetch(`${API_BASE_URL}/users/delete-all`, {
+            method: 'DELETE'
+        });
+        
+        // إعادة تحميل البيانات
+        loadUsers();
+        loadBlockedUsers();
+        loadStats();
+        loadRecentSubmissions();
+        loadActiveChats();
+        
+        // إظهار تنبيه بنجاح العملية
+        Swal.fire({
+            icon: 'success',
+            title: 'تم الحذف',
+            text: 'تم حذف جميع المستخدمين وطلباتهم والمحادثات بنجاح',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Error deleting all users:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء حذف جميع المستخدمين',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// حذف جميع المستخدمين المحظورين
+function deleteAllBlockedUsers() {
+    showPasswordModal('deleteAllBlockedUsers');
+}
+
+async function deleteAllBlockedUsersConfirmed() {
+    try {
+        await fetch(`${API_BASE_URL}/blocked-users/delete-all`, {
+            method: 'DELETE'
+        });
+        
+        // إعادة تحميل البيانات
+        loadBlockedUsers();
+        loadStats();
+        
+        // إظهار تنبيه بنجاح العملية
+        Swal.fire({
+            icon: 'success',
+            title: 'تم الحذف',
+            text: 'تم حذف جميع المستخدمين المحظورين بنجاح',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Error deleting all blocked users:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء حذف جميع المستخدمين المحظورين',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// حذف جميع الطلبات
+function deleteAllSubmissions() {
+    showPasswordModal('deleteAllSubmissions');
+}
+
+async function deleteAllSubmissionsConfirmed() {
+    try {
+        await fetch(`${API_BASE_URL}/submissions/delete-all`, {
+            method: 'DELETE'
+        });
+        
+        // إعادة تحميل البيانات
+        loadAllSubmissions();
+        loadStats();
+        loadRecentSubmissions();
+        
+        // إظهار تنبيه بنجاح العملية
+        Swal.fire({
+            icon: 'success',
+            title: 'تم الحذف',
+            text: 'تم حذف جميع الطلبات بنجاح',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Error deleting all submissions:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء حذف جميع الطلبات',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// حذف جميع الطلبات المعلقة
+function deleteAllPendingSubmissions() {
+    showPasswordModal('deleteAllPendingSubmissions');
+}
+
+async function deleteAllPendingSubmissionsConfirmed() {
+    try {
+        await fetch(`${API_BASE_URL}/submissions/delete-pending`, {
+            method: 'DELETE'
+        });
+        
+        // إعادة تحميل البيانات
+        loadPendingSubmissions();
+        loadStats();
+        loadRecentSubmissions();
+        
+        // إظهار تنبيه بنجاح العملية
+        Swal.fire({
+            icon: 'success',
+            title: 'تم الحذف',
+            text: 'تم حذف جميع الطلبات المعلقة بنجاح',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Error deleting pending submissions:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء حذف الطلبات المعلقة',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// حذف جميع الطلبات المقبولة
+function deleteAllAcceptedSubmissions() {
+    showPasswordModal('deleteAllAcceptedSubmissions');
+}
+
+async function deleteAllAcceptedSubmissionsConfirmed() {
+    try {
+        await fetch(`${API_BASE_URL}/submissions/delete-accepted`, {
+            method: 'DELETE'
+        });
+        
+        // إعادة تحميل البيانات
+        loadAcceptedSubmissions();
+        loadStats();
+        loadRecentSubmissions();
+        
+        // إظهار تنبيه بنجاح العملية
+        Swal.fire({
+            icon: 'success',
+            title: 'تم الحذف',
+            text: 'تم حذف جميع الطلبات المقبولة بنجاح',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Error deleting accepted submissions:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء حذف الطلبات المقبولة',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// حذف جميع الطلبات المرفوضة
+function deleteAllRejectedSubmissions() {
+    showPasswordModal('deleteAllRejectedSubmissions');
+}
+
+async function deleteAllRejectedSubmissionsConfirmed() {
+    try {
+        await fetch(`${API_BASE_URL}/submissions/delete-rejected`, {
+            method: 'DELETE'
+        });
+        
+        // إعادة تحميل البيانات
+        loadRejectedSubmissions();
+        loadStats();
+        loadRecentSubmissions();
+        
+        // إظهار تنبيه بنجاح العملية
+        Swal.fire({
+            icon: 'success',
+            title: 'تم الحذف',
+            text: 'تم حذف جميع الطلبات المرفوضة بنجاح',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Error deleting rejected submissions:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء حذف الطلبات المرفوضة',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// قبول جميع الطلبات المعلقة
+function acceptAllPendingSubmissions() {
+    showPasswordModal('acceptAllPendingSubmissions');
+}
+
+async function acceptAllPendingSubmissionsConfirmed() {
+    try {
+        await fetch(`${API_BASE_URL}/submissions/accept-all-pending`, {
+            method: 'POST'
+        });
+        
+        // إرسال رسائل إشعار للمستخدمين
+        await fetch(`${API_BASE_URL}/chats/notify-all`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: 'تم قبول طلبك بنجاح. شكراً لمشاركتك!'
+            })
+        });
+        
+        // إعادة تحميل البيانات
+        loadPendingSubmissions();
+        loadStats();
+        loadRecentSubmissions();
+        
+        // إظهار تنبيه بنجاح العملية
+        Swal.fire({
+            icon: 'success',
+            title: 'تم القبول',
+            text: 'تم قبول جميع الطلبات المعلق�� بنجاح وإرسال إشعارات للمستخدمين',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Error accepting all pending submissions:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء قبول الطلبات المعلقة',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// رفض جميع الطلبات المعلقة
+function rejectAllPendingSubmissions() {
+    showPasswordModal('rejectAllPendingSubmissions');
+}
+
+async function rejectAllPendingSubmissionsConfirmed() {
+    try {
+        const result = await Swal.fire({
+            title: 'سبب الرفض',
+            input: 'text',
+            inputPlaceholder: 'أدخل سبب الرفض (سيتم تطبيقه على جميع الطلبات)',
+            showCancelButton: true,
+            confirmButtonText: 'رفض الكل',
+            cancelButtonText: 'إلغاء',
+        });
+
+        if (result.isConfirmed) {
+            await fetch(`${API_BASE_URL}/submissions/reject-all-pending`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    reason: result.value || 'لا يوجد سبب'
+                })
+            });
+            
+            // إرسال رسائل إشعار للمستخدمين
+            await fetch(`${API_BASE_URL}/chats/notify-all`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: `تم رفض طلبك للأسباب التالية: ${result.value || 'لا يوجد سبب'}`
+                })
+            });
+            
+            // إعادة تحميل البيانات
+            loadPendingSubmissions();
+            loadStats();
+            loadRecentSubmissions();
+            
+            // إظهار تنبيه بنجاح العملية
+            Swal.fire({
+                icon: 'success',
+                title: 'تم الرفض',
+                text: 'تم رفض جميع الطلبات المعلقة بنجاح وإرسال إشعارات للمستخدمين',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    } catch (error) {
+        console.error('Error rejecting all pending submissions:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء رفض الطلبات المعلقة',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// استعادة جميع الطلبات المرفوضة
+function restoreAllRejectedSubmissions() {
+    showPasswordModal('restoreAllRejectedSubmissions');
+}
+
+async function restoreAllRejectedSubmissionsConfirmed() {
+    try {
+        await fetch(`${API_BASE_URL}/submissions/restore-all-rejected`, {
+            method: 'POST'
+        });
+        
+        // إرسال رسائل إشعار للمستخدمين
+        await fetch(`${API_BASE_URL}/chats/notify-all`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: 'تم استعادة طلبك المرفوض وسيتم مراجعته مرة أخرى'
+            })
+        });
+        
+        // إعادة تحميل البيانات
+        loadRejectedSubmissions();
+        loadStats();
+        loadRecentSubmissions();
+        
+        // إظهار تنبيه بنجاح العملية
+        Swal.fire({
+            icon: 'success',
+            title: 'تم الاستعادة',
+            text: 'تم استعادة جميع الطلبات المرفوضة بنجاح وإرسال إشعارات للمستخدمين',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Error restoring rejected submissions:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء استعادة الطلبات المرفوضة',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// تصدير البيانات
+async function exportData() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/export`);
+        const data = await response.json();
+        const dataStr = JSON.stringify(data, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        
+        const exportName = 'edu-content-data_' + new Date().toISOString().slice(0,10) + '.json';
+        
+        const link = document.createElement('a');
+        link.setAttribute('href', dataUri);
+        link.setAttribute('download', exportName);
+        link.click();
+        
+        // إظهار تنبيه بنجاح العملية
+        Swal.fire({
+            icon: 'success',
+            title: 'تم التصدير',
+            text: 'تم تصدير البيانات بنجاح',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Error exporting data:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء تصدير البيانات',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+// استيراد البيانات
+async function importData() {
+    try {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        
+        input.onchange = async e => { 
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = async function() {
+                try {
+                    const data = JSON.parse(reader.result);
+                    
+                    const result = await Swal.fire({
+                        title: 'تأكيد الاستيراد',
+                        text: 'هل تريد استبدال البيانات الحالية بالبيانات المستوردة؟',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'نعم، استبدال',
+                        cancelButtonText: 'إلغاء'
+                    });
+
+                    if (result.isConfirmed) {
+                        await fetch(`${API_BASE_URL}/import`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data)
+                        });
+                        
+                        // إعادة تحميل جميع البيانات
+                        loadUsers();
+                        loadBlockedUsers();
+                        loadStats();
+                        loadRecentSubmissions();
+                        loadActiveChats();
+                        
+                        // إظهار تنبيه بنجاح العملية
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تم الاستيراد',
+                            text: 'تم استيراد البيانات بنجاح',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error importing data:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'خطأ',
+                        text: 'حدث خطأ أثناء استيراد البيانات',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+            };
+            
+            reader.readAsText(file);
+                };
+                
+                input.click();
+            } catch (error) {
+                console.error('Error importing data:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطأ',
+                    text: 'حدث خطأ أثناء استيراد البيانات',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
         }
 
-        window.loadUserSubmissions = function(userId) {
-            const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
-            const blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
-            const userSubmissions = submissions.filter(submission => submission.userId === userId);
-            const submissionsList = document.getElementById("submissionsList");
-            
-            submissionsList.innerHTML = userSubmissions.map((submission, index) => {
-                const isBlocked = blockedUsers.includes(submission.phone);
-                return `
-                <div class="submission ${submission.status === 'في انتظار المراجعة' ? 'pending' : 
-                    submission.status === 'مقبول' ? 'accepted' : 
-                    submission.status === 'معلق' ? 'on-hold' : 'rejected'}">
-                    
-                    <div class="block-actions">
-                        ${isBlocked ? `
-                        <button class="unblock-btn" onclick="unblockUser('${submission.phone}', event)">
-                            <i class="fas fa-unlock"></i>
-                        </button>
-                        ` : `
-                        <button class="block-btn" onclick="blockUser('${submission.phone}', event)">
-                            <i class="fas fa-ban"></i>
-                        </button>
-                        `}
-                    </div>
-                    
-                    <div class="submission-header">
-                        <span class="status-badge">${submission.status}</span>
-                    </div>
-                    
-                    <p>
-                        <i class="fas fa-user-tag"></i>
-                        <strong>اسم العنصر:</strong>
-                        <span>${submission.name}</span>
-                    </p>
-                    
-                    <p>
-                        <i class="fas fa-tag"></i>
-                        <strong>النوع:</strong>
-                        <span>${submission.type}</span>
-                    </p>
-                    
-                    <p>
-                        <i class="fas fa-align-left"></i>
-                        <strong>الوصف:</strong>
-                        <span>${submission.description}</span>
-                    </p>
-                    
-                    <p>
-                        <i class="fas fa-phone"></i>
-                        <strong>رقم الهاتف:</strong>
-                        <span>${submission.phone}</span>
-                    </p>
-                    
-                    <p>
-                        <i class="fas fa-graduation-cap"></i>
-                        <strong>الفصل:</strong>
-                        <span>${submission.semester}</span>
-                    </p>
-                    
-                    <p>
-                        <i class="fas fa-file"></i>
-                        <strong>الملف:</strong>
-                        <span>${submission.fileName || "لا يوجد ملف"}</span>
-                    </p>
-
-                    <p>
-                        <i class="fa-solid fa-image"></i>
-                        <strong>غلاف الصورة:</strong>
-                        <span>${submission.coverImageName || "لا يوجد غلاف"}</span>
-                    </p>
-                    
-                    <div class="submission-actions">
-                        <button class="accept" onclick="acceptSubmission(${index})">
-                            <i class="fas fa-check"></i> قبول
-                        </button>
-                        <button class="reject" onclick="rejectSubmission(${index})">
-                            <i class="fas fa-times"></i> رفض
-                        </button>
-                        <button class="hold" onclick="holdSubmission(${index})">
-                            <i class="fas fa-pause"></i> تعليق
-                        </button>
-                        <button class="delete" onclick="deleteSubmission(${index})">
-                            <i class="fas fa-trash"></i> مسح
-                        </button>
-                        ${submission.fileName ? `
-                        <button class="preview" onclick="previewFile('${submission.fileName}', '${submission.fileData}')">
-                            <i class="fas fa-eye"></i> معاينة
-                        </button>
-                        <button class="download" onclick="downloadFile('${submission.fileName}', '${submission.fileData}')">
-                            <i class="fas fa-download"></i> تحميل
-                        </button>
-                        ` : ''}
-                        ${submission.coverImageName ? `
-                        <button class="preview" onclick="previewImage('${submission.coverImageName}', '${submission.coverImageData}')">
-                            <i class="fas fa-eye"></i> معاينة الغلاف
-                        </button>
-                        ` : ''}
-                    </div>
-                </div>
-                `;
-            }).join("");
-            
-            document.getElementById('usersContainer').style.display = 'none';
-            document.getElementById('blockedUsersContainer').style.display = 'none';
-            document.getElementById('submissionsContainer').style.display = 'block';
-        };
-
-        window.unblockUser = function(phone, event) {
-            event.stopPropagation();
-            let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
-            if (blockedUsers.includes(phone)) {
-                blockedUsers = blockedUsers.filter(user => user !== phone);
-                localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
-                alert(`تم فك الحظر عن المستخدم برقم الهاتف: ${phone}`);
-                loadBlockedUsers();
-                const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
-                const user = submissions.find(sub => sub.phone === phone);
-                if (user) loadUserSubmissions(user.userId);
-            } else {
-                alert(`المستخدم برقم الهاتف: ${phone} غير محظور.`);
+        // إنشاء نسخة احتياطية
+        async function backupData() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/backup`);
+                const data = await response.json();
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportName = 'edu-content-backup_' + new Date().toISOString().slice(0,10) + '.json';
+                
+                const link = document.createElement('a');
+                link.setAttribute('href', dataUri);
+                link.setAttribute('download', exportName);
+                link.click();
+                
+                // إظهار تنبيه بنجاح العملية
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم النسخ الاحتياطي',
+                    text: 'تم إنشاء نسخة احتياطية بنجاح',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } catch (error) {
+                console.error('Error creating backup:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطأ',
+                    text: 'حدث خطأ أثناء إنشاء النسخة الاحتياطية',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             }
-        };
+        }
 
-        window.unblockAllUsers = function() {
-            if (confirm("هل أنت متأكد أنك تريد فك الحظر عن جميع المستخدمين؟")) {
-                localStorage.removeItem("blockedUsers");
-                alert("تم فك الحظر عن جميع المستخدمين.");
-                loadBlockedUsers();
+        // إعادة ضبط النظام
+        function resetSystem() {
+            showPasswordModal('resetSystem');
+        }
+
+        async function resetSystemConfirmed() {
+            try {
+                const result = await Swal.fire({
+                    title: 'تأكيد إعادة الضبط',
+                    text: "هل أنت متأكد أنك تريد إعادة ضبط النظام بالكامل؟ هذه العملية لا يمكن التراجع عنها!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'نعم، أعد الضبط',
+                    cancelButtonText: 'إلغاء'
+                });
+
+                if (result.isConfirmed) {
+                    await fetch(`${API_BASE_URL}/reset`, {
+                        method: 'POST'
+                    });
+                    
+                    // إعادة تعيين كلمة مرور الأدمن الافتراضية
+                    localStorage.setItem('adminPassword', 'admin123');
+                    
+                    // إعادة تحميل جميع البيانات
+                    loadUsers();
+                    loadBlockedUsers();
+                    loadStats();
+                    loadRecentSubmissions();
+                    loadActiveChats();
+                    
+                    // إظهار تنبيه بنجاح العملية
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'تمت إعادة الضبط',
+                        text: 'تمت إعادة ضبط النظام بنجاح',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+            } catch (error) {
+                console.error('Error resetting system:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطأ',
+                    text: 'حدث خطأ أثناء إعادة ضبط النظام',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             }
-        };
+        }
 
+        // عرض صفحة PDF
         function renderPage(num) {
             pageRendering = true;
             pdfDoc.getPage(num).then(page => {
                 const viewport = page.getViewport({scale: scale});
-                const pdfCanvas = document.getElementById("pdf-canvas");
-                const ctx = pdfCanvas.getContext("2d");
+                const pdfCanvas = document.getElementById('pdf-canvas');
+                const ctx = pdfCanvas.getContext('2d');
                 pdfCanvas.height = viewport.height;
                 pdfCanvas.width = viewport.width;
 
@@ -676,42 +3463,8 @@
             queueRenderPage(pageNum);
         }
 
-        window.acceptSubmission = function(index) {
-            const submissions = JSON.parse(localStorage.getItem("submissions"));
-            submissions[index].status = 'مقبول';
-            localStorage.setItem("submissions", JSON.stringify(submissions));
-            loadUserSubmissions(submissions[index].userId);
-            alert("تم قبول الطلب بنجاح.");
-        };
-
-        window.rejectSubmission = function(index) {
-            const submissions = JSON.parse(localStorage.getItem("submissions"));
-            submissions[index].status = 'مرفوض';
-            localStorage.setItem("submissions", JSON.stringify(submissions));
-            loadUserSubmissions(submissions[index].userId);
-            alert("تم رفض الطلب بنجاح.");
-        };
-
-        window.holdSubmission = function(index) {
-            const submissions = JSON.parse(localStorage.getItem("submissions"));
-            submissions[index].status = 'معلق';
-            localStorage.setItem("submissions", JSON.stringify(submissions));
-            loadUserSubmissions(submissions[index].userId);
-            alert("تم تعليق الطلب بنجاح.");
-        };
-
-        window.deleteSubmission = function(index) {
-            if (confirm("هل أنت متأكد أنك تريد حذف هذا الطلب؟")) {
-                const submissions = JSON.parse(localStorage.getItem("submissions"));
-                const userId = submissions[index].userId;
-                submissions.splice(index, 1);
-                localStorage.setItem("submissions", JSON.stringify(submissions));
-                loadUserSubmissions(userId);
-                alert("تم حذف الطلب بنجاح.");
-            }
-        };
-
-        window.previewFile = function(fileName, fileData) {
+        // معاينة الملف
+        function previewFile(fileName, fileData) {
             const fileType = fileName.split('.').pop().toLowerCase();
             if (fileType === 'pdf') {
                 pdfjsLib.getDocument(fileData).promise.then(pdfDoc_ => {
@@ -721,70 +3474,59 @@
                     document.getElementById('pdf-viewer').style.display = 'flex';
                 }).catch((error) => {
                     console.error("Error opening PDF: ", error.message);
-                    alert("حدث خطأ أثناء فتح ملف PDF.");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'خطأ',
+                        text: 'حدث خطأ أثناء فتح ملف PDF',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 });
-            } else if (fileType === 'jpg' || fileType === 'png') {
+            } else if (fileType === 'jpg' || fileType === 'png' || fileType === 'jpeg') {
                 previewImage(fileName, fileData);
             } else if (fileType === 'mp4' || fileType === 'avi') {
                 previewVideo(fileName, fileData);
             } else {
-                alert("نوع الملف غير مدعوم للمعاينة.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'غير مدعوم',
+                    text: 'نوع الملف غير مدعوم للمعاينة',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             }
-        };
+        }
 
-        window.previewImage = function(fileName, fileData) {
+        // معاينة الصورة
+        function previewImage(fileName, fileData) {
             document.getElementById('image-display').src = fileData;
             document.getElementById('image-viewer').style.display = 'flex';
-        };
+        }
 
-        window.previewVideo = function(fileName, fileData) {
+        // معاينة الفيديو
+        function previewVideo(fileName, fileData) {
             const videoDisplay = document.getElementById('video-display');
             videoDisplay.src = fileData;
             videoDisplay.controls = true;
             document.getElementById('video-viewer').style.display = 'flex';
-        };
+        }
 
-        window.downloadFile = function(fileName, fileData) {
+        // تحميل الملف
+        function downloadFile(fileName, fileData) {
             const link = document.createElement('a');
             link.href = fileData;
             link.download = fileName;
             link.click();
-        };
-
-        window.blockUser = function(phone, event) {
-            if (event) event.stopPropagation();
-            let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
-            if (!blockedUsers.includes(phone)) {
-                blockedUsers.push(phone);
-                localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
-                alert(`تم حظر المستخدم برقم الهاتف: ${phone}`);
-                const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
-                const user = submissions.find(sub => sub.phone === phone);
-                if (user) loadUserSubmissions(user.userId);
-            } else {
-                alert(`المستخدم برقم الهاتف: ${phone} محظور بالفعل.`);
-            }
-        };
-
-        document.getElementById('close-pdf').addEventListener('click', () => {
-            document.getElementById('pdf-viewer').style.display = 'none';
-        });
-
-        document.getElementById('close-image').addEventListener('click', () => {
-            document.getElementById('image-viewer').style.display = 'none';
-        });
-
-        document.getElementById('close-video').addEventListener('click', () => {
-            document.getElementById('video-viewer').style.display = 'none';
-        });
-
-        document.getElementById('prev-page').addEventListener('click', onPrevPage);
-        document.getElementById('next-page').addEventListener('click', onNextPage);
-
-        document.addEventListener("DOMContentLoaded", () => {
-            loadUsers();
-            loadBlockedUsers();
-        });
+            
+            // إظهار تنبيه بنجاح العملية
+            Swal.fire({
+                icon: 'success',
+                title: 'بدأ التحميل',
+                text: 'بدأ تحميل الملف بنجاح',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
     </script>
 </body>
 </html>
