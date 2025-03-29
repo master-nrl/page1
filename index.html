@@ -3,618 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة الإدارة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>لوحة الإدارة الاحترافية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2ecc71;
+            --primary-color: #1e90ff;
+            --secondary-color: #27ae60;
             --danger-color: #e74c3c;
-            --warning-color: #f39c12;
-            --dark-color: #34495e;
+            --warning-color: #f1c40f;
+            --dark-color: #2c3e50;
             --light-color: #ecf0f1;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
+            --border-radius: 12px;
+            --box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease-in-out;
         }
-        
+
         body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: #f5f7fa;
-            color: #333;
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #f0f2f5, #e9ecef);
+            color: var(--dark-color);
             margin: 0;
-            padding: 0;
+            padding: 20px;
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
+            justify-content: center;
         }
-        
+
         .container {
             width: 100%;
-            max-width: 100%;
-            background: #fff;
-            border-radius: 0;
-            box-shadow: none;
-            padding: 25px;
-            margin-bottom: 0;
-            box-sizing: border-box;
-        }
-        
-        .content-container {
-            width: 95%;
             max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        h2 {
-            color: var(--dark-color);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--light-color);
-        }
-        
-        .user-list, .blocked-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .user-card, .blocked-card {
             background: #fff;
-            border: 1px solid #e0e0e0;
             border-radius: var(--border-radius);
-            padding: 15px;
-            cursor: pointer;
+            box-shadow: var(--box-shadow);
+            padding: 30px;
             transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
-        
-        .user-card:hover, .blocked-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border-color: var(--primary-color);
-        }
-        
-        .user-card span, .blocked-card span {
-            font-weight: 500;
-            font-size: 16px;
-            color: var(--dark-color);
-        }
-        
-        .user-card i, .blocked-card i {
+
+        h2 {
             color: var(--primary-color);
-            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
         }
-        
-        .block-controls {
-            display: flex;
-            justify-content: flex-start;
-            margin-bottom: 20px;
+
+        h2::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+            bottom: 0;
+            right: 0;
         }
-        
-        .btn {
-            padding: 8px 16px;
-            border-radius: var(--border-radius);
-            font-weight: 500;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .btn i {
-            margin-left: 5px;
-        }
-        
-        .btn-danger {
-            background-color: var(--danger-color);
-            border-color: var(--danger-color);
-        }
-        
-        .btn-secondary {
-            background-color: var(--dark-color);
-            border-color: var(--dark-color);
-        }
-        
-        .back-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--dark-color);
-            color: white;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .back-btn:hover {
-            transform: scale(1.1);
-        }
-        
-        .submissions-grid {
+
+        .user-list, .blocked-list, .submissions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 20px;
         }
-        
-        .submission {
+
+        .card {
             background: #fff;
-            border: 1px solid #e0e0e0;
+            border: none;
             border-radius: var(--border-radius);
-            padding: 25px;
-            transition: var(--transition);
-            position: relative;
+            padding: 20px;
             box-shadow: var(--box-shadow);
-            display: flex;
-            flex-direction: column;
-            margin: 0 10px;
+            transition: var(--transition);
         }
-        
-        .submission:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
-        
-        .submission-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .submission p {
-            margin: 8px 0;
-            font-size: 14px;
-            color: #555;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .submission p i {
-            color: var(--primary-color);
-            font-size: 16px;
-            width: 20px;
-            text-align: center;
-        }
-        
-        .submission p strong {
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
             color: var(--dark-color);
-            font-weight: 500;
-            min-width: 80px;
+            margin-bottom: 10px;
         }
-        
-        .submission p span {
-            flex: 1;
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            transition: var(--transition);
         }
-        
+
+        .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .btn-danger { background-color: var(--danger-color); border-color: var(--danger-color); }
+        .btn-warning { background-color: var(--warning-color); border-color: var(--warning-color); }
+        .btn-secondary { background-color: var(--secondary-color); border-color: var(--secondary-color); }
+
         .submission-actions {
             display: flex;
+            gap: 10px;
             flex-wrap: wrap;
-            gap: 8px;
             margin-top: 15px;
         }
-        
-        .submission button {
-            padding: 8px 12px;
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            flex-grow: 1;
-        }
-        
-        .submission button i {
-            margin-left: 5px;
-            font-size: 12px;
-        }
-        
-        .submission button.accept {
-            background-color: var(--secondary-color);
-            color: #fff;
-        }
-        
-        .submission button.reject {
-            background-color: var(--danger-color);
-            color: #fff;
-        }
-        
-        .submission button.hold {
-            background-color: var(--warning-color);
-            color: #fff;
-        }
-        
-        .submission button.delete {
-            background-color: #95a5a6;
-            color: #fff;
-        }
-        
-        .submission button.download {
-            background-color: var(--primary-color);
-            color: #fff;
-        }
-        
-        .submission button.preview {
-            background-color: #3498db;
-            color: #fff;
-        }
-        
-        .block-actions {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            display: flex;
-            gap: 5px;
-        }
-        
-        .block-actions button {
-            padding: 5px 10px;
-            font-size: 12px;
-            border-radius: var(--border-radius);
-            border: none;
-            cursor: pointer;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .block-btn {
-            background-color: var(--danger-color);
-        }
-        
-        .unblock-btn {
-            background-color: var(--secondary-color);
-        }
-        
+
         .status-badge {
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
         }
-        
-        .pending .status-badge {
-            background-color: var(--warning-color);
+
+        .pending .status-badge { background-color: var(--warning-color); }
+        .accepted .status-badge { background-color: var(--secondary-color); }
+        .rejected .status-badge { background-color: var(--danger-color); }
+        .on-hold .status-badge { background-color: #7f8c8d; }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
-        
-        .accepted .status-badge {
-            background-color: var(--secondary-color);
+
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: var(--box-shadow);
         }
-        
-        .rejected .status-badge {
-            background-color: var(--danger-color);
-        }
-        
-        .on-hold .status-badge {
-            background-color: #95a5a6;
-        }
-        
+
         #pdf-viewer, #image-viewer, #video-viewer {
             position: fixed;
             top: 50%;
             left: 50%;
-            width: 80%;
-            max-width: 800px;
-            height: 80%;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
             transform: translate(-50%, -50%);
+            width: 85%;
+            max-width: 900px;
+            height: 85%;
+            background: rgba(0, 0, 0, 0.95);
             border-radius: var(--border-radius);
-            padding: 15px;
-            z-index: 1000;
-        }
-        
-        #pdf-canvas, #image-display, #video-display {
-            border: 1px solid #fff;
-            background: #fff;
-            margin-bottom: 15px;
-            width: 100%;
-            height: 100%;
-            max-height: calc(100% - 50px);
-        }
-        
-        #pdf-controls, #image-controls, #video-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        #pdf-controls button, #image-controls button, #video-controls button {
-            width: 40px;
-            height: 40px;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            color: #fff;
-            background-color: var(--primary-color);
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-        
-        #pdf-controls button:hover, #image-controls button:hover, #video-controls button:hover {
-            transform: scale(1.1);
-        }
-        
-        #pdf-controls button.close, #image-controls button.close, #video-controls button.close {
-            background-color: var(--danger-color);
-        }
-        
-        #page-count {
-            color: white;
-            font-size: 14px;
-            margin: 0 5px;
-            min-width: 50px;
-            text-align: center;
-        }
-        
-        /* إضافة أنماط جديدة للإشعارات */
-        .notification-badge {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #e74c3c;
-            color: white;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            z-index: 1000;
-        }
-        
-        .new-submission-alert {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #2ecc71;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 1000;
+            padding: 20px;
             display: none;
-            animation: slideIn 0.5s forwards;
+            z-index: 1000;
         }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+
+        #pdf-canvas, #image-display, #video-display {
+            max-height: calc(100% - 60px);
+            width: 100%;
+            border-radius: 8px;
         }
-        
-        .refresh-btn {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background-color: var(--primary-color);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            z-index: 999;
-        }
-        
+
         @media (max-width: 768px) {
             .user-list, .blocked-list, .submissions-grid {
                 grid-template-columns: 1fr;
             }
-            
-            #pdf-viewer, #image-viewer, #video-viewer {
-                width: 95%;
-                height: 70%;
-            }
-            
-            .submission {
-                padding: 20px 15px;
-                margin: 0;
-            }
+            .container { padding: 15px; }
         }
     </style>
 </head>
 <body>
-    <!-- إضافة عناصر للإشعارات -->
-    <div class="notification-badge" id="notificationBadge" style="display: none;">0</div>
-    <div class="new-submission-alert" id="newSubmissionAlert">
-        <i class="fas fa-bell"></i> هناك طلبات جديدة تحتاج المراجعة!
-    </div>
-    
-    <div class="refresh-btn" onclick="loadData()">
-        <i class="fas fa-sync-alt"></i>
-    </div>
-
-    <!-- قسم المستخدمون -->
     <div class="container" id="usersContainer">
-        <div class="content-container">
-            <h2><i class="fas fa-users"></i> المستخدمون</h2>
-            <div class="user-list" id="userList">
-                <!-- سيتم ملء المستخدمين بواسطة JavaScript -->
-            </div>
+        <h2><i class="fas fa-users"></i> إدارة المستخدمين</h2>
+        <div class="mb-3">
+            <button class="btn btn-danger" onclick="deleteAllSubmissions()">
+                <i class="fas fa-trash"></i> مسح جميع الطلبات
+            </button>
         </div>
+        <div class="user-list" id="userList"></div>
     </div>
 
-    <!-- قسم المستخدمون المحظورون -->
     <div class="container" id="blockedUsersContainer">
-        <div class="content-container">
-            <div class="block-controls">
-                <button class="btn btn-danger" onclick="unblockAllUsers()">
-                    <i class="fa fa-unlock"></i> فك الحظر ع�� الجميع
-                </button>
-            </div>
-            <h2><i class="fas fa-ban"></i> المستخدمون المحظورون</h2>
-            <div class="blocked-list" id="blockedList">
-                <!-- سيتم ملء المستخدمين المحظورين بواسطة JavaScript -->
-            </div>
+        <h2><i class="fas fa-ban"></i> المستخدمون المحظورون</h2>
+        <div class="mb-3">
+            <button class="btn btn-secondary" onclick="unblockAllUsers()">
+                <i class="fas fa-unlock"></i> فك الحظر عن الجميع
+            </button>
         </div>
+        <div class="blocked-list" id="blockedList"></div>
     </div>
 
-    <!-- قسم عرض الطلبات -->
     <div class="container" id="submissionsContainer" style="display: none;">
-        <div class="content-container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2><i class="fas fa-file-alt"></i> طلبات المستخدم</h2>
-                <div class="back-btn" onclick="showUsers()">
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </div>
-            <div class="submissions-grid" id="submissionsList">
-                <!-- سيتم ملء الطلبات بواسطة JavaScript -->
-            </div>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-file-alt"></i> طلبات المستخدم</h2>
+            <button class="btn btn-dark" onclick="showUsers()">
+                <i class="fas fa-arrow-right"></i> العودة
+            </button>
         </div>
+        <div class="submissions-grid" id="submissionsList"></div>
     </div>
 
     <div id="pdf-viewer">
         <canvas id="pdf-canvas"></canvas>
-        <div id="pdf-controls">
-            <button id="prev-page" title="السابق"><i class="fas fa-arrow-right"></i></button>
-            <span id="page-count">0/0</span>
-            <button id="next-page" title="التالي"><i class="fas fa-arrow-left"></i></button>
-            <button id="close-pdf" class="close" title="إغلاق"><i class="fas fa-times"></i></button>
+        <div class="d-flex justify-content-center gap-3 mt-3">
+            <button class="btn btn-primary" id="prev-page"><i class="fas fa-arrow-right"></i></button>
+            <span id="page-count" class="text-white">0/0</span>
+            <button class="btn btn-primary" id="next-page"><i class="fas fa-arrow-left"></i></button>
+            <button class="btn btn-danger" id="close-pdf"><i class="fas fa-times"></i></button>
         </div>
     </div>
 
     <div id="image-viewer">
         <img id="image-display" src="" alt="Image Preview">
-        <div id="image-controls">
-            <button id="close-image" class="close" title="إغلاق"><i class="fas fa-times"></i></button>
-        </div>
+        <button class="btn btn-danger mt-3" id="close-image"><i class="fas fa-times"></i></button>
     </div>
 
     <div id="video-viewer">
         <video id="video-display" controls></video>
-        <div id="video-controls">
-            <button id="close-video" class="close" title="إغلاق"><i class="fas fa-times"></i></button>
+        <button class="btn btn-danger mt-3" id="close-video"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <h3>تأكيد العملية</h3>
+            <p id="modalMessage"></p>
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                <button class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
+                <button class="btn btn-primary" id="confirmAction">تأكيد</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // =============================================
-        // نظام استقبال الطلبات من المستخدمين عبر postMessage
-        // =============================================
-        
-        let submissions = JSON.parse(localStorage.getItem("submissions")) || [];
-        let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
-        let newSubmissionsCount = 0;
-        let pdfDoc = null,
-            pageNum = 1,
-            pageRendering = false,
-            pageNumPending = null,
-            scale = 1.5;
-
-        // استقبال الرسائل من نافذة المستخدم
-        window.addEventListener("message", (event) => {
-            // التحقق من مصدر الرسالة (استبدل بموقعك الفعلي)
-            if (event.origin !== "https://master-nrl.github.io/page1") return;
-            
-            const message = event.data;
-            
-            // معالجة أنواع الرسائل المختلفة
-            switch(message.type) {
-                case "NEW_SUBMISSION":
-                    handleNewSubmission(message.data);
-                    break;
-                
-                case "CHECK_BLOCKED":
-                    checkIfUserBlocked(event.source, message.userId);
-                    break;
-                
-                default:
-                    console.log("رسالة غير معروفة:", message);
-            }
-        });
-
-        function handleNewSubmission(submissionData) {
-            // إضافة الطلب الجديد إلى القائمة
-            submissions.push({
-                ...submissionData,
-                status: "في انتظار المراجعة",
-                date: new Date().toISOString()
-            });
-            
-            localStorage.setItem("submissions", JSON.stringify(submissions));
-            
-            // تحديث العداد
-            newSubmissionsCount++;
-            updateNotificationBadge();
-            
-            // عرض إشعار
-            showNewSubmissionAlert();
-            
-            // إرسال تأكيد الاستلام للمستخدم
-            if (event.source) {
-                event.source.postMessage({
-                    type: "SUBMISSION_RECEIVED",
-                    success: true
-                }, event.origin);
-            }
-        }
-
-        function checkIfUserBlocked(source, userId) {
-            const isBlocked = blockedUsers.includes(userId);
-            source.postMessage({
-                type: "BLOCK_STATUS",
-                isBlocked: isBlocked
-            }, "https://your-user-site.com");
-        }
-
-        function updateNotificationBadge() {
-            const badge = document.getElementById("notificationBadge");
-            if (newSubmissionsCount > 0) {
-                badge.style.display = "flex";
-                badge.textContent = newSubmissionsCount;
-            } else {
-                badge.style.display = "none";
-            }
-        }
-
-        function showNewSubmissionAlert() {
-            const alert = document.getElementById("newSubmissionAlert");
-            alert.style.display = "block";
-            setTimeout(() => {
-                alert.style.display = "none";
-            }, 5000);
-        }
-
-        // =============================================
-        // نظام عرض وإدارة الطلبات
-        // =============================================
-
-        function loadData() {
-            loadUsers();
-            loadBlockedUsers();
-            newSubmissionsCount = 0;
-            updateNotificationBadge();
-        }
+        let pdfDoc = null, pageNum = 1, pageRendering = false, pageNumPending = null, scale = 1.5;
 
         function showUsers() {
             document.getElementById('usersContainer').style.display = 'block';
@@ -623,202 +242,170 @@
         }
 
         function loadUsers() {
+            const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
             const users = [...new Set(submissions.map(sub => sub.userId))];
             const userList = document.getElementById("userList");
             userList.innerHTML = users.map(userId => `
-                <div class="user-card" onclick="loadUserSubmissions('${userId}')">
-                    <span><i class="fas fa-user"></i> المستخدم ${userId}</span>
+                <div class="card" onclick="loadUserSubmissions('${userId}')">
+                    <div class="card-title"><i class="fas fa-user"></i> المستخدم ${userId}</div>
                     <i class="fas fa-angle-left"></i>
                 </div>
             `).join("");
         }
 
         function loadBlockedUsers() {
+            const blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
             const blockedList = document.getElementById("blockedList");
             blockedList.innerHTML = blockedUsers.map(phone => `
-                <div class="blocked-card">
-                    <span><i class="fas fa-phone"></i> ${phone}</span>
-                    <i class="fa fa-unlock" onclick="unblockUser('${phone}', event)"></i>
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-phone"></i> ${phone}</div>
+                    <button class="btn btn-secondary" onclick="unblockUser('${phone}', event)">
+                        <i class="fas fa-unlock"></i> فك الحظر
+                    </button>
                 </div>
             `).join("");
         }
 
         window.loadUserSubmissions = function(userId) {
+            const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
+            const blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
             const userSubmissions = submissions.filter(submission => submission.userId === userId);
             const submissionsList = document.getElementById("submissionsList");
-            
+
             submissionsList.innerHTML = userSubmissions.map((submission, index) => {
                 const isBlocked = blockedUsers.includes(submission.phone);
                 return `
-                <div class="submission ${submission.status === 'في انتظار المراجعة' ? 'pending' : 
+                <div class="card submission ${submission.status === 'في انتظار المراجعة' ? 'pending' : 
                     submission.status === 'مقبول' ? 'accepted' : 
                     submission.status === 'معلق' ? 'on-hold' : 'rejected'}">
-                    
-                    <div class="block-actions">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="status-badge">${submission.status}</span>
                         ${isBlocked ? `
-                        <button class="unblock-btn" onclick="unblockUser('${submission.phone}', event)">
+                        <button class="btn btn-secondary btn-sm" onclick="unblockUser('${submission.phone}', event)">
                             <i class="fas fa-unlock"></i>
                         </button>
                         ` : `
-                        <button class="block-btn" onclick="blockUser('${submission.phone}', event)">
+                        <button class="btn btn-danger btn-sm" onclick="blockUser('${submission.phone}', event)">
                             <i class="fas fa-ban"></i>
                         </button>
                         `}
                     </div>
-                    
-                    <div class="submission-header">
-                        <span class="status-badge">${submission.status}</span>
-                    </div>
-                    
-                    <p>
-                        <i class="fas fa-user-tag"></i>
-                        <strong>اسم العنصر:</strong>
-                        <span>${submission.name}</span>
-                    </p>
-                    
-                    <p>
-                        <i class="fas fa-tag"></i>
-                        <strong>النوع:</strong>
-                        <span>${submission.type}</span>
-                    </p>
-                    
-                    <p>
-                        <i class="fas fa-align-left"></i>
-                        <strong>الوصف:</strong>
-                        <span>${submission.description}</span>
-                    </p>
-                    
-                    <p>
-                        <i class="fas fa-phone"></i>
-                        <strong>رقم الهاتف:</strong>
-                        <span>${submission.phone}</span>
-                    </p>
-                    
-                    <p>
-                        <i class="fas fa-graduation-cap"></i>
-                        <strong>الفصل:</strong>
-                        <span>${submission.semester}</span>
-                    </p>
-                    
-                    <p>
-                        <i class="fas fa-file"></i>
-                        <strong>الملف:</strong>
-                        <span>${submission.fileName || "لا يوجد ملف"}</span>
-                    </p>
-
-                    <p>
-                        <i class="fa-solid fa-image"></i>
-                        <strong>غلاف الصورة:</strong>
-                        <span>${submission.coverImageName || "لا يوجد غلاف"}</span>
-                    </p>
-                    
+                    <p><strong>اسم العنصر:</strong> ${submission.name}</p>
+                    <p><strong>النوع:</strong> ${submission.type}</p>
+                    <p><strong>الوصف:</strong> ${submission.description}</p>
+                    <p><strong>رقم الهاتف:</strong> ${submission.phone}</p>
+                    <p><strong>الفصل:</strong> ${submission.semester}</p>
+                    <p><strong>الملف:</strong> ${submission.fileName || "لا يوجد"}</p>
+                    <p><strong>غلاف الصورة:</strong> ${submission.coverImageName || "لا يوجد"}</p>
                     <div class="submission-actions">
-                        <button class="accept" onclick="acceptSubmission(${index})">
-                            <i class="fas fa-check"></i> قبول
-                        </button>
-                        <button class="reject" onclick="rejectSubmission(${index})">
-                            <i class="fas fa-times"></i> رفض
-                        </button>
-                        <button class="hold" onclick="holdSubmission(${index})">
-                            <i class="fas fa-pause"></i> تعليق
-                        </button>
-                        <button class="delete" onclick="deleteSubmission(${index})">
-                            <i class="fas fa-trash"></i> مسح
-                        </button>
+                        <button class="btn btn-secondary" onclick="acceptSubmission(${index})"><i class="fas fa-check"></i> قبول</button>
+                        <button class="btn btn-danger" onclick="rejectSubmission(${index})"><i class="fas fa-times"></i> رفض</button>
+                        <button class="btn btn-warning" onclick="holdSubmission(${index})"><i class="fas fa-pause"></i> تعليق</button>
+                        <button class="btn btn-dark" onclick="deleteSubmission(${index})"><i class="fas fa-trash"></i> مسح</button>
                         ${submission.fileName ? `
-                        <button class="preview" onclick="previewFile('${submission.fileName}', '${submission.fileData}')">
-                            <i class="fas fa-eye"></i> معاينة
-                        </button>
-                        <button class="download" onclick="downloadFile('${submission.fileName}', '${submission.fileData}')">
-                            <i class="fas fa-download"></i> تحميل
-                        </button>
-                        ` : ''}
+                        <button class="btn btn-primary" onclick="previewFile('${submission.fileName}', '${submission.fileData}')"><i class="fas fa-eye"></i> معاينة</button>
+                        <button class="btn btn-primary" onclick="downloadFile('${submission.fileName}', '${submission.fileData}')"><i class="fas fa-download"></i> تحميل</button>
+                        `:''}
                         ${submission.coverImageName ? `
-                        <button class="preview" onclick="previewImage('${submission.coverImageName}', '${submission.coverImageData}')">
-                            <i class="fas fa-eye"></i> معاينة الغلاف
-                        </button>
-                        ` : ''}
+                        <button class="btn btn-primary" onclick="previewImage('${submission.coverImageName}', '${submission.coverImageData}')"><i class="fas fa-eye"></i> معاينة الغلاف</button>
+                        `:''}
                     </div>
                 </div>
                 `;
             }).join("");
-            
-            document.getElementById('usersContainer').style.display = 'none';
-            document.getElementById('blockedUsersContainer').style.display = 'none';
+
+            showUsers(); // Reset view
             document.getElementById('submissionsContainer').style.display = 'block';
         };
 
-        window.unblockUser = function(phone, event) {
-            if (event) event.stopPropagation();
-            if (blockedUsers.includes(phone)) {
-                blockedUsers = blockedUsers.filter(user => user !== phone);
-                localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
-                alert(`تم فك الحظر عن المستخدم برقم الهاتف: ${phone}`);
-                loadBlockedUsers();
-                const user = submissions.find(sub => sub.phone === phone);
-                if (user) loadUserSubmissions(user.userId);
-            } else {
-                alert(`المستخدم برقم الهاتف: ${phone} غير محظور.`);
-            }
-        };
-
-        window.unblockAllUsers = function() {
-            if (confirm("هل أنت متأكد أنك تريد فك الحظر عن جميع المستخدمين؟")) {
-                blockedUsers = [];
-                localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
-                alert("تم فك الحظر عن جميع المستخدمين.");
-                loadBlockedUsers();
-            }
-        };
-
         window.blockUser = function(phone, event) {
-            if (event) event.stopPropagation();
+            event.stopPropagation();
+            let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
             if (!blockedUsers.includes(phone)) {
                 blockedUsers.push(phone);
                 localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
-                alert(`تم حظر المستخدم برقم الهاتف: ${phone}`);
+                alert(`تم حظر المستخدم: ${phone}`);
+                loadBlockedUsers();
+                const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
                 const user = submissions.find(sub => sub.phone === phone);
                 if (user) loadUserSubmissions(user.userId);
-            } else {
-                alert(`المستخدم برقم الهاتف: ${phone} محظور بالفعل.`);
             }
+        };
+
+        window.unblockUser = function(phone, event) {
+            event.stopPropagation();
+            let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
+            blockedUsers = blockedUsers.filter(user => user !== phone);
+            localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
+            alert(`تم فك الحظر عن: ${phone}`);
+            loadBlockedUsers();
+            const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
+            const user = submissions.find(sub => sub.phone === phone);
+            if (user) loadUserSubmissions(user.userId);
+        };
+
+        window.unblockAllUsers = function() {
+            showConfirmationModal("هل تريد فك الحظر عن جميع المستخدمين؟", () => {
+                localStorage.removeItem("blockedUsers");
+                alert("تم فك الحظر عن الجميع.");
+                loadBlockedUsers();
+            });
+        };
+
+        window.deleteAllSubmissions = function() {
+            showConfirmationModal("هل تريد مسح جميع الطلبات؟", () => {
+                localStorage.removeItem("submissions");
+                alert("تم مسح جميع الطلبات.");
+                loadUsers();
+            });
         };
 
         window.acceptSubmission = function(index) {
-            submissions[index].status = 'مقبول';
-            localStorage.setItem("submissions", JSON.stringify(submissions));
-            loadUserSubmissions(submissions[index].userId);
-            alert("تم قبول الطلب بنجاح.");
+            updateSubmissionStatus(index, 'مقبول', "تم قبول الطلب.");
         };
 
         window.rejectSubmission = function(index) {
-            submissions[index].status = 'مرفوض';
-            localStorage.setItem("submissions", JSON.stringify(submissions));
-            loadUserSubmissions(submissions[index].userId);
-            alert("تم رفض الطلب بنجاح.");
+            updateSubmissionStatus(index, 'مرفوض', "تم رفض الطلب.");
         };
 
         window.holdSubmission = function(index) {
-            submissions[index].status = 'معلق';
-            localStorage.setItem("submissions", JSON.stringify(submissions));
-            loadUserSubmissions(submissions[index].userId);
-            alert("تم تعليق الطلب بنجاح.");
+            updateSubmissionStatus(index, 'معلق', "تم تعليق الطلب.");
         };
 
         window.deleteSubmission = function(index) {
-            if (confirm("هل أنت متأكد أنك تريد حذف هذا الطلب؟")) {
+            showConfirmationModal("هل تريد حذف هذا الطلب؟", () => {
+                const submissions = JSON.parse(localStorage.getItem("submissions"));
                 const userId = submissions[index].userId;
                 submissions.splice(index, 1);
                 localStorage.setItem("submissions", JSON.stringify(submissions));
+                alert("تم حذف الطلب.");
                 loadUserSubmissions(userId);
-                alert("تم حذف الطلب بنجاح.");
-            }
+            });
         };
 
-        // =============================================
-        // نظام معاينة الملفات
-        // =============================================
+        function updateSubmissionStatus(index, status, message) {
+            const submissions = JSON.parse(localStorage.getItem("submissions"));
+            submissions[index].status = status;
+            localStorage.setItem("submissions", JSON.stringify(submissions));
+            alert(message);
+            loadUserSubmissions(submissions[index].userId);
+        }
 
+        function showConfirmationModal(message, callback) {
+            const modal = document.getElementById("confirmationModal");
+            document.getElementById("modalMessage").textContent = message;
+            document.getElementById("confirmAction").onclick = () => {
+                callback();
+                closeModal();
+            };
+            modal.style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("confirmationModal").style.display = "none";
+        }
+
+        // PDF Viewer Logic
         function renderPage(num) {
             pageRendering = true;
             pdfDoc.getPage(num).then(page => {
@@ -828,112 +415,82 @@
                 pdfCanvas.height = viewport.height;
                 pdfCanvas.width = viewport.width;
 
-                const renderContext = {
-                    canvasContext: ctx,
-                    viewport: viewport
-                };
-                const renderTask = page.render(renderContext);
-
-                renderTask.promise.then(() => {
+                page.render({canvasContext: ctx, viewport: viewport}).promise.then(() => {
                     pageRendering = false;
                     if (pageNumPending !== null) {
                         renderPage(pageNumPending);
                         pageNumPending = null;
                     }
                 });
-                
+
                 document.getElementById('page-count').textContent = `${num}/${pdfDoc.numPages}`;
             });
-
-            document.getElementById('prev-page').disabled = (num <= 1);
-            document.getElementById('next-page').disabled = (num >= pdfDoc.numPages);
         }
 
         function queueRenderPage(num) {
-            if (pageRendering) {
-                pageNumPending = num;
-            } else {
-                renderPage(num);
-            }
+            if (pageRendering) pageNumPending = num;
+            else renderPage(num);
         }
 
-        function onPrevPage() {
-            if (pageNum <= 1) {
-                return;
-            }
-            pageNum--;
-            queueRenderPage(pageNum);
-        }
+        document.getElementById('prev-page').onclick = () => {
+            if (pageNum > 1) queueRenderPage(--pageNum);
+        };
 
-        function onNextPage() {
-            if (pageNum >= pdfDoc.numPages) {
-                return;
-            }
-            pageNum++;
-            queueRenderPage(pageNum);
-        }
+        document.getElementById('next-page').onclick = () => {
+            if (pageNum < pdfDoc.numPages) queueRenderPage(++pageNum);
+        };
+
+        document.getElementById('close-pdf').onclick = () => {
+            document.getElementById('pdf-viewer').style.display = 'none';
+        };
+
+        document.getElementById('close-image').onclick = () => {
+            document.getElementById('image-viewer').style.display = 'none';
+        };
+
+        document.getElementById('close-video').onclick = () => {
+            document.getElementById('video-viewer').style.display = 'none';
+        };
 
         window.previewFile = function(fileName, fileData) {
             const fileType = fileName.split('.').pop().toLowerCase();
             if (fileType === 'pdf') {
-                pdfjsLib.getDocument(fileData).promise.then(pdfDoc_ => {
-                    pdfDoc = pdfDoc_;
+                pdfjsLib.getDocument(fileData).promise.then(pdf => {
+                    pdfDoc = pdf;
                     pageNum = 1;
                     renderPage(pageNum);
-                    document.getElementById('pdf-viewer').style.display = 'flex';
-                }).catch((error) => {
-                    console.error("Error opening PDF: ", error.message);
-                    alert("حدث خطأ أثناء فتح ملف PDF.");
-                });
-            } else if (fileType === 'jpg' || fileType === 'jpeg' || fileType === 'png') {
+                    document.getElementById('pdf-viewer').style.display = 'block';
+                }).catch(err => alert("خطأ في فتح PDF: " + err.message));
+            } else if (['jpg', 'png'].includes(fileType)) {
                 previewImage(fileName, fileData);
-            } else if (fileType === 'mp4' || fileType === 'avi') {
+            } else if (['mp4', 'avi'].includes(fileType)) {
                 previewVideo(fileName, fileData);
             } else {
-                alert("نوع الملف غير مدعوم للمعاينة.");
+                alert("نوع الملف غير مدعوم.");
             }
         };
 
         window.previewImage = function(fileName, fileData) {
             document.getElementById('image-display').src = fileData;
-            document.getElementById('image-viewer').style.display = 'flex';
+            document.getElementById('image-viewer').style.display = 'block';
         };
 
         window.previewVideo = function(fileName, fileData) {
-            const videoDisplay = document.getElementById('video-display');
-            videoDisplay.src = fileData;
-            videoDisplay.controls = true;
-            document.getElementById('video-viewer').style.display = 'flex';
+            const video = document.getElementById('video-display');
+            video.src = fileData;
+            document.getElementById('video-viewer').style.display = 'block';
         };
 
         window.downloadFile = function(fileName, fileData) {
-            const link = document.createElement('a');
-            link.href = fileData;
-            link.download = fileName;
-            link.click();
+            const a = document.createElement('a');
+            a.href = fileData;
+            a.download = fileName;
+            a.click();
         };
 
-        // =============================================
-        // تهيئة الصفحة
-        // =============================================
-
-        document.getElementById('close-pdf').addEventListener('click', () => {
-            document.getElementById('pdf-viewer').style.display = 'none';
-        });
-
-        document.getElementById('close-image').addEventListener('click', () => {
-            document.getElementById('image-viewer').style.display = 'none';
-        });
-
-        document.getElementById('close-video').addEventListener('click', () => {
-            document.getElementById('video-viewer').style.display = 'none';
-        });
-
-        document.getElementById('prev-page').addEventListener('click', onPrevPage);
-        document.getElementById('next-page').addEventListener('click', onNextPage);
-
         document.addEventListener("DOMContentLoaded", () => {
-            loadData();
+            loadUsers();
+            loadBlockedUsers();
         });
     </script>
 </body>
